@@ -140,48 +140,11 @@ task main()
 		}
 
 
-		if(	( (X1<mid+var && X1>mid-var) && (Y1<mid+var && Y1>mid-var) ) && ( (X2<mid+var && X2>mid-var) && (Y2<mid+var && Y2>mid-var) ) )
-		{
-			float average = (X1+Y1+X2+Y2)/4;
-			motor[motor1] = 0;
-			motor[motor2] = average;
-			motor[motor3] = 0;
-			motor[motor4] = average;
-		}
+		motor[motor1] = Y1-X1;
+		motor[motor4] = Y1+X1;
 
-		else if( ( (X1<-mid+var && X1>-mid-var) && (Y1<-mid+var && Y1>-mid-var) ) && ( (X2<-mid+var && X2>-mid-var) && (Y2<-mid+var && Y2>-mid-var) ) )
-		{
-			float average = (X1+Y1+X2+Y2)/4;
-			motor[motor1] = 0;
-			motor[motor2] = average;
-			motor[motor3] = 0;
-			motor[motor4] = average;
-		}
+		motor[motor2] = Y2+X2;
+		motor[motor3] = Y2-X2;
 
-		else if( ( (X1<mid+var && X1>mid-var) && (Y1<-mid+var && Y1>-mid-var) ) && ( (X2<mid+var && X2>mid-var) && (Y2<-mid+var && Y2>-mid-var) ) )
-		{
-			float average = (-X1+Y1-X2+Y2)/4;
-			motor[motor1] = average;
-			motor[motor2] = 0;
-			motor[motor3] = average;
-			motor[motor4] = 0;
-		}
-
-		else if( ( (X1<-mid+var && X1>-mid-var) && (Y1<mid+var && Y1>mid-var) ) && ( (X2<-mid+var && X2>-mid-var) && (Y2<mid+var && Y2>mid-var) ) )
-		{
-			float average = (-X1+Y1-X2+Y2)/4;
-			motor[motor1] = average;
-			motor[motor2] = 0;
-			motor[motor3] = average;
-			motor[motor4] = 0;
-		}
-		else
-		{
-			motor[motor1] = Y1-X1;
-			motor[motor4] = Y1+X1;
-
-			motor[motor2] = Y2+X2;
-			motor[motor3] = Y2-X2;
-		}
 	}
 }
