@@ -21,7 +21,7 @@
 // You need to customize two functions with code unique to your specific robot.
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-
+#pragma DebuggerWindows("joystickGame")
 #include "JoystickDriver.c"  //Include file to "handle" the Bluetooth messages.
 
 
@@ -69,7 +69,32 @@ void autoDrive (int time_seconds, int X, int Y, int R)
 	return;
 }
 
+//Drive in the direction of the angle
+//angle = angle to drive in, in degrees, (0 is forward, 90 is right, 180 is backwards, -90 is left, etc...)
+//power = the power to drive with
+//
 
+void driveAngle( float angle, float power, float sec )
+{
+	//calculate X and Y power
+	float Y = sinDegrees(90-angle)*power;
+	float X = cosDegrees(angle)*power;
+	//drive
+	motor[motor1] = -Y-X;
+	motor[motor4] = -Y+X;
+	motor[motor2] = -Y+X;
+	motor[motor3] = -Y-X;
+	//wait for sec seconds
+	wait10Msec(sec*100);
+
+	//Reset motors
+	motor[motor1] = 0;
+	motor[motor4] = 0;
+	motor[motor2] = 0;
+	motor[motor3] = 0;
+
+	return;
+}
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
