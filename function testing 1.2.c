@@ -72,13 +72,16 @@ void autoDrive (int time_seconds, int X, int Y, int R)
 //Drive in the direction of the angle
 //angle = angle to drive in, in degrees, (0 is forward, 90 is right, 180 is backwards, -90 is left, etc...)
 //power = the power to drive with
-//
+//sec = number of seconds running
+
+//uses the definition of sine and cosine on the unit circle to determine x and y in a range of -1 to 1, then multiply each by power.
+//set the motors using the x and y values generated above, and mecanum wheel drive code, wait for sec seconds, then stop motors.
 
 void driveAngle( float angle, float power, float sec )
 {
 	//calculate X and Y power
 	float Y = sinDegrees(90-angle)*power;
-	float X = cosDegrees(angle)*power;
+	float X = cosDegrees(90-angle)*power;
 	//drive
 	motor[motor1] = -Y-X;
 	motor[motor4] = -Y+X;
