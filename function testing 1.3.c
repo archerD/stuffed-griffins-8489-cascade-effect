@@ -58,7 +58,7 @@ void autoDrive (int time_seconds, int X, int Y, int R)
 	motor[motor4] =  -Y - R - X;
 
 	//wait for _ seconds
-	wait10Msec(100*time_seconds);
+	wait(time_seconds);
 
 	//Reset motors
 	motor[motor1] = 0;
@@ -88,7 +88,34 @@ void driveAngle( float angle, float power, float sec )
 	motor[motor2] = -Y+X;
 	motor[motor3] = -Y-X;
 	//wait for sec seconds
-	wait10Msec(sec*100);
+	wait(sec);
+
+	//Reset motors
+	motor[motor1] = 0;
+	motor[motor4] = 0;
+	motor[motor2] = 0;
+	motor[motor3] = 0;
+
+	return;
+}
+//Drive in the direction of the angle
+//angle = angle to drive in, in degrees, (0 is forward, 90 is right, 180 is backwards, -90 is left, etc...)
+//power = the power to drive with
+//revolutions = number of revolutions running, as measured from motor1, this value must be positive!
+
+void driveAngleRev( float angle, float power, float revolutions )
+{
+	//calculate X and Y power
+	float Y = sinDegrees(90-angle)*power;
+	float X = cosDegrees(90-angle)*power;
+	//drive
+	motor[motor1] = -Y-X;
+	motor[motor4] = -Y+X;
+	motor[motor2] = -Y+X;
+	motor[motor3] = -Y-X;
+	//wait for sec seconds
+	while(abs(nMotorEncoder[motor1])<revolutions*360)
+	{}
 
 	//Reset motors
 	motor[motor1] = 0;
@@ -135,7 +162,6 @@ task main()
 
 	//Create "deadzone" variables. Adjust threshold value to increase/decrease deadzone
 	int X2 = 0, Y1 = 0, X1 = 0, Y2 = 0, threshold = 10;
-	int mid = 95, var = 40;
 
 
 	while (true)
@@ -165,6 +191,14 @@ task main()
 		{
 			autoDrive(1,0,50,50);
 
+		}
+		if(joystick.joy1_TopHat == 0)
+		{
+			driveAngle(30, 75, 2);
+		}
+		if(joystick.joy1_TopHat == 7)
+		{
+			driveAngleRev(-30, 75, 1);
 		}
 
 
