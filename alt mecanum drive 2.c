@@ -80,7 +80,7 @@ task main()
 
 	//Create "deadzone" variables. Adjust threshold value to increase/decrease deadzone
 	int X2 = 0, Y1 = 0, X1 = 0, Y2 = 0, threshold = 10;
-	int mid = 95, var = 45;
+	int var = 20;
 
 
 	while (true)
@@ -108,7 +108,7 @@ task main()
 
 		if( X1*Y1>=0 && X2*Y1>=0 && X1*Y2>=0 && X2*Y1>=0 )
 		{
-			if( (abs(X1)> mid-var && abs(X1)<mid+var && abs(Y1)>mid-var && abs(Y1)<mid+var ) && (abs(X2)> mid-var && abs(X2)<mid+var && abs(Y2)>mid-var && abs(Y2)<mid+var ) )
+			if( abs(X1-Y1)<var && abs(X2-Y2)<var )
 			{
 				float average = (X1+Y1+X2+Y2)/4;
 				motor[motor1] = 0;
@@ -127,7 +127,7 @@ task main()
 		}
 		else
 		{
-			if( (abs(X1)> mid-var && abs(X1)<mid+var && abs(Y1)>mid-var && abs(Y1)<mid+var ) && (abs(X2)> mid-var && abs(X2)<mid+var && abs(Y2)>mid-var && abs(Y2)<mid+var ) )
+			if( abs(X1+Y1)< var && abs(X2+Y2)< var)
 			{
 				float average = (-X1+Y1-X2+Y2)/4;
 				motor[motor1] = average;
