@@ -106,43 +106,31 @@ task main()
 		else
 			Y2 = 0;
 
-		if( X1*Y1>=0 && X2*Y1>=0 && X1*Y2>=0 && X2*Y1>=0 )
+		if( X1*Y1>=0 && X2*Y1>=0 && X1*Y2>=0 && X2*Y1>=0 && abs(X1-Y1)<var && abs(X2-Y2)<var )
 		{
-			if( abs(X1-Y1)<var && abs(X2-Y2)<var )
-			{
-				float average = (X1+Y1+X2+Y2)/4;
-				motor[motor1] = 0;
-				motor[motor2] = average;
-				motor[motor3] = 0;
-				motor[motor4] = average;
-			}
-			else
-			{
-				motor[motor1] = Y1+X1;
-				motor[motor4] = Y1-X1;
 
-				motor[motor2] = Y2-X2;
-				motor[motor3] = Y2+X2;
-			}
+			float average = (X1+Y1+X2+Y2)/4;
+			motor[motor1] = 0;
+			motor[motor2] = average;
+			motor[motor3] = 0;
+			motor[motor4] = average;
+
+		}
+		else if( -X1*Y1>=0 && -X2*Y1>=0 && -X1*Y2>=0 && -X2*Y1>=0 && abs(X1+Y1)< var && abs(X2+Y2)< var )
+		{
+			float average = (-X1+Y1-X2+Y2)/4;
+			motor[motor1] = average;
+			motor[motor2] = 0;
+			motor[motor3] = average;
+			motor[motor4] = 0;
 		}
 		else
 		{
-			if( abs(X1+Y1)< var && abs(X2+Y2)< var)
-			{
-				float average = (-X1+Y1-X2+Y2)/4;
-				motor[motor1] = average;
-				motor[motor2] = 0;
-				motor[motor3] = average;
-				motor[motor4] = 0;
-			}
-			else
-			{
-				motor[motor1] = Y1+X1;
-				motor[motor4] = Y1-X1;
+			motor[motor1] = Y1+X1;
+			motor[motor4] = Y1-X1;
 
-				motor[motor2] = Y2-X2;
-				motor[motor3] = Y2+X2;
-			}
+			motor[motor2] = Y2-X2;
+			motor[motor3] = Y2+X2;
 		}
 
 	}
