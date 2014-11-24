@@ -44,6 +44,24 @@ void initializeRobot()
 	return;
 }
 
+//scales the joystick value
+//movementThreshold represents the lowest motor value for which the robot moves.  this will be the slowest speed attainable.
+
+int scale(int joyValue)
+{
+	int movementThreshold = 10;
+	long step1 = joyValue * joyValue;
+	long step2 = step1 * joyValue;
+	long step3 = step2 * (100-movementThreshold);
+	float step4 = step3 / 16129;
+	long step5 = step4 / abs(joyValue);
+	int step6 = movementThreshold * joyValue;
+	int step7 = step6 / abs(joyValue);
+	int final = step5 + step7;
+	return final;
+
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -80,11 +98,12 @@ task main()
 
 	//Create "deadzone" variables. Adjust threshold value to increase/decrease deadzone
 	int X2 = 0, Y1 = 0, X1 = 0, Y2 = 0, threshold = 10;
-	int var = 20;
+	int var = 30;
 
 
 	while (true)
 	{
+		getJoystickSettings(joystick);
 		//Create "deadzone" for Y1/Ch3
 		if(abs(joystick.joy1_y1) > threshold)
 			Y1 = joystick.joy1_y1;
@@ -109,7 +128,7 @@ task main()
 		if( X1*Y1>=0 && X2*Y1>=0 && X1*Y2>=0 && X2*Y1>=0 && abs(X1-Y1)<var && abs(X2-Y2)<var )
 		{
 
-			float average = (X1+Y1+X2+Y2)/4;
+			float average = scale((X1+Y1+X2+Y2)/4);
 			motor[motor1] = 0;
 			motor[motor2] = average;
 			motor[motor3] = 0;
@@ -118,7 +137,7 @@ task main()
 		}
 		else if( -X1*Y1>=0 && -X2*Y1>=0 && -X1*Y2>=0 && -X2*Y1>=0 && abs(X1+Y1)< var && abs(X2+Y2)< var )
 		{
-			float average = (-X1+Y1-X2+Y2)/4;
+			float average = scale((-X1+Y1-X2+Y2))/4;
 			motor[motor1] = average;
 			motor[motor2] = 0;
 			motor[motor3] = average;
@@ -126,11 +145,11 @@ task main()
 		}
 		else
 		{
-			motor[motor1] = Y1+X1;
-			motor[motor4] = Y1-X1;
+			motor[motor1] = scale(Y1+X1);
+			motor[motor4] = scale(Y1-X1);
 
-			motor[motor2] = Y2-X2;
-			motor[motor3] = Y2+X2;
+			motor[motor2] = scale(Y2-X2);
+			motor[motor3] = scale(Y2+X2);
 		}
 
 	}
