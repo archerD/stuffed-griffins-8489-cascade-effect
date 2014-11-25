@@ -66,8 +66,6 @@ int scale(int joyValue)
 		int final = step5 + step7;
 		return final;
 	}
-
-
 }
 
 

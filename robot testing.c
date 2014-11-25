@@ -45,6 +45,28 @@ void initializeRobot()
 	return;
 }
 
+int scale(int joyValue)
+{
+	if(joyValue == 0)
+	{
+		return 0;
+	}
+	else
+	{
+		int movementThreshold = 10;
+		long step1 = joyValue * joyValue;
+		long step2 = step1 * joyValue;
+		long step3 = step2 * (100-movementThreshold);
+		float step4 = step3 / 16129;
+		long step5 = step4 / abs(joyValue);
+		int step6 = movementThreshold * joyValue;
+		int step7 = step6 / abs(joyValue);
+		int final = step5 + step7;
+		return final;
+	}
+}
+
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -88,37 +110,25 @@ task main()
 		getJoystickSettings(joystick);
 
 		if(abs(joystick.joy1_y1)>10){
-			motor[intake] = joystick.joy1_y1;
-		}else{
+			motor[intake] = scale(joystick.joy1_y1);
+		}
+		else
+		{
 			motor[intake] = 0;
-	  }
+		}
 
 
 		if(joystick.joy1_TopHat == 0)
 		{
 			servoTarget[goalGripper] = up;
-			wait10Msec(100);
+			wait1Msec(1);
 		}
 		if(joystick.joy1_TopHat == 4)
 		{
 			servoTarget[goalGripper] = down;
-			wait10Msec(100);
+			wait1Msec(1);
 		}
 
-		eraseDisplay();
-		displayTextLine(1,"test");
-
-		if(joystick.joy1_Buttons == 2 && servoToggle == false){
-			servo[goalGripper] = down;
-
-			wait10Msec(100);
-			servoToggle = true;
-		}else if(joystick.joy1_Buttons == 2 && servoToggle == true){
-			servo[goalGripper] = down;
-
-			wait10Msec(100);
-			servoToggle = false;
-  	}
-
 	}
+
 }
