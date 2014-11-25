@@ -56,21 +56,20 @@ void initializeRobot()
 	return;
 }
 
-int scale(int joyValue)
+int scale(int joyValue, int threshold, int minMotorPower)
 {
-	if(joyValue == 0)
+	if(abs(joyValue) <= threshold)
 	{
 		return 0;
 	}
 	else
 	{
-		int movementThreshold = 15;
 		long step1 = joyValue * joyValue;
 		long step2 = step1 * joyValue;
-		long step3 = step2 * (100-movementThreshold);
+		long step3 = step2 * (100-minMotorPower);
 		float step4 = step3 / 16129;
 		long step5 = step4 / abs(joyValue);
-		int step6 = movementThreshold * joyValue;
+		int step6 = minMotorPower * joyValue;
 		int step7 = step6 / abs(joyValue);
 		int final = step5 + step7;
 		return final;
@@ -140,19 +139,19 @@ task main()
 		else
 			Y2 = 0;
 
-		if( abs(X1)>=10  && X1*Y1>=0 && X2*Y1>=0 && X1*Y2>=0 && X2*Y1>=0 && abs(X1-Y1)<var && abs(X2-Y2)<var )
+		if( abs(Y1+Y2+X1+X2)>=10  && X1*Y1>=0 && X2*Y1>=0 && X1*Y2>=0 && X2*Y1>=0 && abs(X1-Y1)<var && abs(X2-Y2)<var )
 		{
 
-			float average = scale((X1+Y1+X2+Y2)/4);
+			float average = scale((X1+Y1+X2+Y2)/4, 10, 15);
 			motor[motor1] = average;
 			motor[motor2] = 0;
 			motor[motor3] = average;
 			motor[motor4] = 0;
 
 		}
-		else if( abs(X1)>=10 && -X1*Y1>=0 && -X2*Y1>=0 && -X1*Y2>=0 && -X2*Y1>=0 && abs(X1+Y1)< var && abs(X2+Y2)< var )
+		else if( abs(Y1+Y2-X1-X2)>=10 && -X1*Y1>=0 && -X2*Y1>=0 && -X1*Y2>=0 && -X2*Y1>=0 && abs(X1+Y1)< var && abs(X2+Y2)< var )
 		{
-			float average = scale((-X1+Y1-X2+Y2))/4;
+			float average = scale((-X1+Y1-X2+Y2)/4, 10, 15);
 			motor[motor1] = 0;
 			motor[motor2] = average;
 			motor[motor3] = 0;
@@ -160,15 +159,15 @@ task main()
 		}
 		else
 		{
-			motor[motor1] = scale(Y1+X1);
-			motor[motor4] = scale(Y1-X1);
+			motor[motor1] = scale(Y1+X1, 10, 15);
+			motor[motor4] = scale(Y1-X1, 10, 15);
 
-			motor[motor2] = scale(Y2-X2);
-			motor[motor3] = scale(Y2+X2);
+			motor[motor2] = scale(Y2-X2, 10, 15);
+			motor[motor3] = scale(Y2+X2, 10, 15);
 		}
 
 		if(abs(joystick.joy2_y1)>10){
-			motor[intake] = scale(joystick.joy2_y1);
+			motor[intake] = scale(joystick.joy2_y1, 5, 5);
 		}
 		else
 		{
@@ -179,12 +178,10 @@ task main()
 		if(joystick.joy2_TopHat == 0)
 		{
 			servoTarget[goalGripper] = up;
-			wait1Msec(1);
 		}
 		if(joystick.joy2_TopHat == 4)
 		{
 			servoTarget[goalGripper] = down;
-			wait1Msec(1);
 		}
 
 	}

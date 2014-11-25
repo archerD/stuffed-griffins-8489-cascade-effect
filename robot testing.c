@@ -104,6 +104,7 @@ task main()
 	int down = 15;
 	int up = 50;
 	bool servoToggle = false;
+	bool press = false;
 
 	while (true)
 	{
@@ -117,16 +118,27 @@ task main()
 			motor[intake] = 0;
 		}
 
-
 		if(joystick.joy1_TopHat == 0)
 		{
 			servoTarget[goalGripper] = up;
-			wait1Msec(1);
 		}
 		if(joystick.joy1_TopHat == 4)
 		{
 			servoTarget[goalGripper] = down;
-			wait1Msec(1);
+		}
+
+
+		if(joy1Btn(2) == 1 && press){
+			servoToggle=!servoToggle;
+			press=false;
+	  }else if(joy1Btn(2) != 1){
+	  	press=true;
+	  }
+
+		if(servoToggle == false){
+			servo[goalGripper] = down;
+		}else if(servoToggle == true){
+			servo[goalGripper] = up;
 		}
 
 	}
