@@ -114,8 +114,7 @@ task main()
 
 	waitForStart();   // wait for start of tele-op phase
 
-	int X2 = 0, Y1 = 0, X1 = 0, Y2 = 0, threshold = 10;
-	int var = 30;
+	int X2 = 0, Y1 = 0, X1 = 0, Y2 = 0;
 
 	int down = 15;
 	int up = 50;
@@ -145,7 +144,7 @@ task main()
 			motor[motor4] = 0;
 
 		}
-		else if( abs(Y1+Y2-X1-X2)>=10 && -X1*Y1>=0 && -X2*Y1>=0 && -X1*Y2>=0 && -X2*Y1>=0 && abs(X1+Y1)< var && abs(X2+Y2)< var )
+		else if( -X1*Y1>=0 && -X2*Y1>=0 && -X1*Y2>=0 && -X2*Y1>=0 && abs(x+y-10)/sqrt(2)-1.02*sqrt((x-10)*(x-10)+(y-10)*(y-10))-3>0 )
 		{
 			float average = scale((-X1+Y1-X2+Y2)/4, 15);
 			motor[motor1] = 0;
