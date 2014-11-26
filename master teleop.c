@@ -9,10 +9,10 @@
 #pragma config(Motor,  motorA,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorB,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorC,           ,             tmotorNXT, openLoop)
-#pragma config(Motor,  mtr_S1_C1_1,     motor2,        tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C1_2,     motor4,        tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S2_C1_1,     motor3,        tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S2_C1_2,     motor1,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C1_1,     motor2,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C1_2,     motor3,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S2_C1_1,     motor1,        tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S2_C1_2,     motor4,        tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S3_C1_1,     intake,        tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S3_C1_2,     motorI,        tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S4_C1_1,    goalGripper,          tServoStandard)
@@ -167,7 +167,7 @@ task main()
 		}
 
 		if(abs(joystick.joy2_y1)>10){
-			motor[intake] = scale(joystick.joy2_y1, 5, 5);
+			motor[intake] = -scale(joystick.joy2_y1, 5, 5);
 		}
 		else
 		{
@@ -175,11 +175,11 @@ task main()
 		}
 
 
-		if(joystick.joy2_TopHat == 0)
+		if(joy1Btn(5) == 1)
 		{
 			servoTarget[goalGripper] = up;
 		}
-		if(joystick.joy2_TopHat == 4)
+		if(joy1Btn(7) == 1)
 		{
 			servoTarget[goalGripper] = down;
 		}
