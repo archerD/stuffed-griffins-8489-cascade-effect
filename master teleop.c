@@ -55,10 +55,10 @@ void initializeRobot()
 
 	return;
 }
-
-int scale(int joyValue, int minMotorPower)
+//this function takes a joystick input and scales it.  mandatory input is the joystick value.
+//other parameters are minimum power required to move the motor, and a threshold to create a deadzone for the motor.
+int scale(int joyValue, short minMotorPower = 15, short threshold = 5)
 {
-	int threshold = 5;
 	if(abs(joyValue) < threshold)
 	{
 		return 0;
@@ -137,7 +137,7 @@ task main()
 		if( X1*Y1>=0 && X2*Y1>=0 && X1*Y2>=0 && X2*Y1>=0 && abs(x+y-10)/sqrt(2)-1.02*sqrt((x-10)*(x-10)+(y-10)*(y-10))-3>0 )
 		{
 
-			float average = scale((X1+Y1+X2+Y2)/4, 15);
+			float average = scale((X1+Y1+X2+Y2)/4);
 			motor[motor1] = average;
 			motor[motor2] = 0;
 			motor[motor3] = average;
@@ -146,7 +146,7 @@ task main()
 		}
 		else if( -X1*Y1>=0 && -X2*Y1>=0 && -X1*Y2>=0 && -X2*Y1>=0 && abs(x+y-10)/sqrt(2)-1.02*sqrt((x-10)*(x-10)+(y-10)*(y-10))-3>0 )
 		{
-			float average = scale((-X1+Y1-X2+Y2)/4, 15);
+			float average = scale((-X1+Y1-X2+Y2)/4);
 			motor[motor1] = 0;
 			motor[motor2] = average;
 			motor[motor3] = 0;
@@ -154,11 +154,11 @@ task main()
 		}
 		else
 		{
-			motor[motor1] = scale(Y1+X1, 15);
-			motor[motor4] = scale(Y1-X1, 15);
+			motor[motor1] = scale(Y1+X1);
+			motor[motor4] = scale(Y1-X1);
 
-			motor[motor2] = scale(Y2-X2, 15);
-			motor[motor3] = scale(Y2+X2, 15);
+			motor[motor2] = scale(Y2-X2);
+			motor[motor3] = scale(Y2+X2);
 		}
 
 		if(abs(joystick.joy2_y1)>10){
