@@ -175,11 +175,11 @@ task main()
 		}
 
 
-		if(joy1Btn(5) == 1)
+		if(joy2Btn(5) == 1)
 		{
 			servoTarget[goalGripper] = up;
 		}
-		if(joy1Btn(7) == 1)
+		if(joy2Btn(7) == 1)
 		{
 			servoTarget[goalGripper] = down;
 		}
