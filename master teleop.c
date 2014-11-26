@@ -13,8 +13,8 @@
 #pragma config(Motor,  mtr_S1_C1_2,     motor3,        tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S2_C1_1,     motor1,        tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S2_C1_2,     motor4,        tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S3_C1_1,     intake,        tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S3_C1_2,     motorI,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S3_C1_1,     intake,        tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S3_C1_2,     arm,           tmotorTetrix, openLoop, encoder)
 #pragma config(Servo,  srvo_S4_C1_1,    goalGripper,          tServoStandard)
 #pragma config(Servo,  srvo_S4_C1_2,    servo2,               tServoNone)
 #pragma config(Servo,  srvo_S4_C1_3,    servo3,               tServoNone)
@@ -167,7 +167,7 @@ task main()
 		}
 
 		if(abs(joystick.joy2_y1)>10){
-			motor[intake] = -scale(joystick.joy2_y1, 5, 5);
+			motor[intake] = scale(joystick.joy2_y1, 5, 5);
 		}
 		else
 		{
