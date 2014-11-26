@@ -55,9 +55,12 @@ void initializeRobot()
 
 	return;
 }
+
+
+
 //this function takes a joystick input and scales it.  mandatory input is the joystick value.
-//other parameters are minimum power required to move the motor, and a threshold to create a deadzone for the motor.
-int scale(int joyValue, short minMotorPower = 15, short threshold = 5)
+//other parameters are minimum power required to move the motor, a threshold to create a deadzone for the motor, and maximum power possible.
+int scale(int joyValue, short minMotorPower = 15, short threshold = 5, short maxMotorPower = 100)
 {
 	if(abs(joyValue) < threshold)
 	{
@@ -70,7 +73,7 @@ int scale(int joyValue, short minMotorPower = 15, short threshold = 5)
 		long step1prepC = joyValue - step1prepB;
 		long step1 = step1prepC * step1prepC;
 		long step2 = step1 * joyValue;
-		long step3 = step2 * (100-minMotorPower);
+		long step3 = step2 * (maxMotorPower-minMotorPower);
 		long step4prep = (127-threshold) * (127-threshold);
 		float step4 = step3 / step4prep;
 		long step5 = step4 / abs(joyValue);
@@ -119,6 +122,9 @@ task main()
 	int down = 15;
 	int up = 50;
 
+	bool driveToggle = false;
+	bool press = false;
+
 	while (true)
 	{
 		getJoystickSettings(joystick);
@@ -134,27 +140,48 @@ task main()
 		int x = (X1+X2)/2;
 		int y = (Y1+Y2)/2;
 
-		if( X1*Y1>=0 && X2*Y1>=0 && X1*Y2>=0 && X2*Y1>=0 && abs(x+y-10)/sqrt(2)-1.02*sqrt((x-10)*(x-10)+(y-10)*(y-10))-3>0 )
+		if(joy1Btn(2) == 1 && press)
 		{
-
-			float average = scale((X1+Y1+X2+Y2)/4);
-			motor[motor1] = average;
-			motor[motor2] = 0;
-			motor[motor3] = average;
-			motor[motor4] = 0;
-
+			driveToggle=!driveToggle;
+			press=false;
 		}
-		else if( -X1*Y1>=0 && -X2*Y1>=0 && -X1*Y2>=0 && -X2*Y1>=0 && abs(x+y-10)/sqrt(2)-1.02*sqrt((x-10)*(x-10)+(y-10)*(y-10))-3>0 )
+		else if(joy1Btn(2) != 1)
 		{
-			float average = scale((-X1+Y1-X2+Y2)/4);
-			motor[motor1] = 0;
-			motor[motor2] = average;
-			motor[motor3] = 0;
-			motor[motor4] = average;
+			press=true;
+		}
+
+		if(!driveToggle)
+		{
+			if( X1*Y1>=0 && X2*Y1>=0 && X1*Y2>=0 && X2*Y1>=0 && abs(x+y-10)/sqrt(2)-1.02*sqrt((x-10)*(x-10)+(y-10)*(y-10))-3>0 )
+			{
+
+				float average = scale((X1+Y1+X2+Y2)/4);
+				motor[motor1] = average;
+				motor[motor2] = 0;
+				motor[motor3] = average;
+				motor[motor4] = 0;
+
+			}
+			else if( -X1*Y1>=0 && -X2*Y1>=0 && -X1*Y2>=0 && -X2*Y1>=0 && abs(x+y-10)/sqrt(2)-1.02*sqrt((x-10)*(x-10)+(y-10)*(y-10))-3>0 )
+			{
+				float average = scale((-X1+Y1-X2+Y2)/4);
+				motor[motor1] = 0;
+				motor[motor2] = average;
+				motor[motor3] = 0;
+				motor[motor4] = average;
+			}
+			else
+			{
+				motor[motor1] = scale(Y1+X1);
+				motor[motor4] = scale(Y1-X1);
+
+				motor[motor2] = scale(Y2-X2);
+				motor[motor3] = scale(Y2+X2);
+			}
 		}
 		else
 		{
-			motor[motor1] = scale(Y1+X1);
+			motor[motor1] = scale(Y1+X1, 10, 5, 50);
 			motor[motor4] = scale(Y1-X1);
 
 			motor[motor2] = scale(Y2-X2);
