@@ -14,7 +14,7 @@
 #pragma config(Motor,  mtr_S2_C1_1,     motor1,        tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S2_C1_2,     motor4,        tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S3_C1_1,     intake,        tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S3_C1_2,     motorI,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S3_C1_2,     arm,           tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S4_C1_1,    goalGripper,          tServoStandard)
 #pragma config(Servo,  srvo_S4_C1_2,    servo2,               tServoNone)
 #pragma config(Servo,  srvo_S4_C1_3,    servo3,               tServoNone)
@@ -56,18 +56,23 @@ void initializeRobot()
 	return;
 }
 
-int scale(int joyValue, int threshold, int minMotorPower)
+int scale(int joyValue, int minMotorPower)
 {
-	if(abs(joyValue) <= threshold)
+	int threshold = 5;
+	if(abs(joyValue) < threshold)
 	{
 		return 0;
 	}
 	else
 	{
-		long step1 = joyValue * joyValue;
+		long step1prepA = threshold * joyValue;
+		long step1prepB = step1prepA / abs(joyValue);
+		long step1prepC = joyValue - step1prepB;
+		long step1 = step1prepC * step1prepC;
 		long step2 = step1 * joyValue;
 		long step3 = step2 * (100-minMotorPower);
-		float step4 = step3 / 16129;
+		long step4prep = (127-threshold) * (127-threshold);
+		float step4 = step3 / step4prep;
 		long step5 = step4 / abs(joyValue);
 		int step6 = minMotorPower * joyValue;
 		int step7 = step6 / abs(joyValue);
@@ -118,31 +123,22 @@ task main()
 	while (true)
 	{
 		getJoystickSettings(joystick);
-		//Create "deadzone" for Y1/Ch3
-		if(abs(joystick.joy1_y1) > threshold)
-			Y1 = joystick.joy1_y1;
-		else
-			Y1 = 0;
-		//Create "deadzone" for X1/Ch4
-		if(abs(joystick.joy1_x1) > threshold)
-			X1 = joystick.joy1_x1;
-		else
-			X1 = 0;
-		//Create "deadzone" for X2/Ch1
-		if(abs(joystick.joy1_x2) > threshold)
-			X2 = joystick.joy1_x2;
-		else
-			X2 = 0;
-		//Create "deadzone" for Y1/Ch3
-		if(abs(joystick.joy1_y2) > threshold)
-			Y2 = joystick.joy1_y2;
-		else
-			Y2 = 0;
 
-		if( abs(Y1+Y2+X1+X2)>=10  && X1*Y1>=0 && X2*Y1>=0 && X1*Y2>=0 && X2*Y1>=0 && abs(X1-Y1)<var && abs(X2-Y2)<var )
+		Y1 = joystick.joy1_y1;
+
+		X1 = joystick.joy1_x1;
+
+		X2 = joystick.joy1_x2;
+
+		Y2 = joystick.joy1_y2;
+
+		int x = (X1+X2)/2;
+		int y = (Y1+Y2)/2;
+
+		if( X1*Y1>=0 && X2*Y1>=0 && X1*Y2>=0 && X2*Y1>=0 && abs(x+y-10)/sqrt(2)-1.02*sqrt((x-10)*(x-10)+(y-10)*(y-10))-3>0 )
 		{
 
-			float average = scale((X1+Y1+X2+Y2)/4, 10, 15);
+			float average = scale((X1+Y1+X2+Y2)/4, 15);
 			motor[motor1] = average;
 			motor[motor2] = 0;
 			motor[motor3] = average;
@@ -151,7 +147,7 @@ task main()
 		}
 		else if( abs(Y1+Y2-X1-X2)>=10 && -X1*Y1>=0 && -X2*Y1>=0 && -X1*Y2>=0 && -X2*Y1>=0 && abs(X1+Y1)< var && abs(X2+Y2)< var )
 		{
-			float average = scale((-X1+Y1-X2+Y2)/4, 10, 15);
+			float average = scale((-X1+Y1-X2+Y2)/4, 15);
 			motor[motor1] = 0;
 			motor[motor2] = average;
 			motor[motor3] = 0;
@@ -159,15 +155,15 @@ task main()
 		}
 		else
 		{
-			motor[motor1] = scale(Y1+X1, 10, 15);
-			motor[motor4] = scale(Y1-X1, 10, 15);
+			motor[motor1] = scale(Y1+X1, 15);
+			motor[motor4] = scale(Y1-X1, 15);
 
-			motor[motor2] = scale(Y2-X2, 10, 15);
-			motor[motor3] = scale(Y2+X2, 10, 15);
+			motor[motor2] = scale(Y2-X2, 15);
+			motor[motor3] = scale(Y2+X2, 15);
 		}
 
 		if(abs(joystick.joy2_y1)>10){
-			motor[intake] = -scale(joystick.joy2_y1, 5, 5);
+			motor[intake] = -scale(joystick.joy2_y1, 5);
 		}
 		else
 		{
@@ -175,11 +171,11 @@ task main()
 		}
 
 
-		if(joy1Btn(5) == 1)
+		if(joy2Btn(5) == 1)
 		{
 			servoTarget[goalGripper] = up;
 		}
-		if(joy1Btn(7) == 1)
+		if(joy2Btn(7) == 1)
 		{
 			servoTarget[goalGripper] = down;
 		}
