@@ -55,12 +55,31 @@ void initializeRobot()
 
 	return;
 }
+//this function is designed to take joystick input, create a deadzone, and scale it
+int scale(int joyValue)
+{
+	if(abs(joyValue) < 5)
+	{
+		return 0;
+	}
+	else
+	{
+		long step1 = joyValue * joyValue;
+		long step2 = step1 * joyValue;
+		long step3 = step2 * (85);
+		float step4 = step3 / 14884;
+		long step5 = step4 / abs(joyValue);
+		int step6 = 15 * joyValue;
+		int step7 = step6 / abs(joyValue);
+		int final = step5 + step7;
+		return final;
+	}
+}
 
-
-
-//this function takes a joystick input and scales it.  mandatory input is the joystick value.
-//other parameters are minimum power required to move the motor, a threshold to create a deadzone for the motor, and maximum power possible.
-int scale(int joyValue, short minMotorPower = 15, short threshold = 5, short maxMotorPower = 100)
+//this function is an expansion of the above function.  it offers more control over the scaling.
+//the parameter are: joyValue, the input from the joystick, minMotorPower, the lowest possible power for the direction,
+//threshold, for the size of the deadzone, and maxMotorPower, the maximum power possible for the diriection.
+int scale(int joyValue, short minMotorPower, short threshold, short maxMotorPower)
 {
 	if(abs(joyValue) < threshold)
 	{
@@ -182,14 +201,14 @@ task main()
 		else
 		{
 			motor[motor1] = scale(Y1+X1, 10, 5, 50);
-			motor[motor4] = scale(Y1-X1);
+			motor[motor4] = scale(Y1-X1, 10, 5, 50);
 
-			motor[motor2] = scale(Y2-X2);
-			motor[motor3] = scale(Y2+X2);
+			motor[motor2] = scale(Y2-X2, 10, 5, 50);
+			motor[motor3] = scale(Y2+X2, 10, 5, 50);
 		}
 
 		if(abs(joystick.joy2_y1)>10){
-			motor[intake] = -scale(joystick.joy2_y1, 5);
+			motor[intake] = -scale(joystick.joy2_y1, 5, 5, 100);
 		}
 		else
 		{
