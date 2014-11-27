@@ -55,10 +55,10 @@ void initializeRobot()
 
 	return;
 }
-
-int scale(int joyValue, int threshold, int minMotorPower)
+//this function is designed to take joystick input, create a deadzone, and scale it
+int scale(int joyValue)
 {
-	if(abs(joyValue) <= threshold)
+	if(abs(joyValue) < 5)
 	{
 		return 0;
 	}
@@ -66,8 +66,35 @@ int scale(int joyValue, int threshold, int minMotorPower)
 	{
 		long step1 = joyValue * joyValue;
 		long step2 = step1 * joyValue;
-		long step3 = step2 * (100-minMotorPower);
-		float step4 = step3 / 16129;
+		long step3 = step2 * (85);
+		float step4 = step3 / 14884;
+		long step5 = step4 / abs(joyValue);
+		int step6 = 15 * joyValue;
+		int step7 = step6 / abs(joyValue);
+		int final = step5 + step7;
+		return final;
+	}
+}
+
+//this function is an expansion of the above function.  it offers more control over the scaling.
+//the parameter are: joyValue, the input from the joystick, minMotorPower, the lowest possible power for the direction,
+//threshold, for the size of the deadzone, and maxMotorPower, the maximum power possible for the diriection.
+int scale(int joyValue, short minMotorPower, short threshold, short maxMotorPower)
+{
+	if(abs(joyValue) < threshold)
+	{
+		return 0;
+	}
+	else
+	{
+		long step1prepA = threshold * joyValue;
+		long step1prepB = step1prepA / abs(joyValue);
+		long step1prepC = joyValue - step1prepB;
+		long step1 = step1prepC * step1prepC;
+		long step2 = step1 * joyValue;
+		long step3 = step2 * (maxMotorPower-minMotorPower);
+		long step4prep = (127-threshold) * (127-threshold);
+		float step4 = step3 / step4prep;
 		long step5 = step4 / abs(joyValue);
 		int step6 = minMotorPower * joyValue;
 		int step7 = step6 / abs(joyValue);
@@ -109,65 +136,80 @@ task main()
 
 	waitForStart();   // wait for start of tele-op phase
 
-	int X2 = 0, Y1 = 0, X1 = 0, Y2 = 0, threshold = 10;
-	int var = 30;
+	int X2 = 0, Y1 = 0, X1 = 0, Y2 = 0;
 
 	int down = 15;
 	int up = 50;
 
+	bool driveToggle = false;
+	bool press = false;
+
 	while (true)
 	{
 		getJoystickSettings(joystick);
-		//Create "deadzone" for Y1/Ch3
-		if(abs(joystick.joy1_y1) > threshold)
-			Y1 = joystick.joy1_y1;
-		else
-			Y1 = 0;
-		//Create "deadzone" for X1/Ch4
-		if(abs(joystick.joy1_x1) > threshold)
-			X1 = joystick.joy1_x1;
-		else
-			X1 = 0;
-		//Create "deadzone" for X2/Ch1
-		if(abs(joystick.joy1_x2) > threshold)
-			X2 = joystick.joy1_x2;
-		else
-			X2 = 0;
-		//Create "deadzone" for Y1/Ch3
-		if(abs(joystick.joy1_y2) > threshold)
-			Y2 = joystick.joy1_y2;
-		else
-			Y2 = 0;
 
-		if( abs(Y1+Y2+X1+X2)>=10  && X1*Y1>=0 && X2*Y1>=0 && X1*Y2>=0 && X2*Y1>=0 && abs(X1-Y1)<var && abs(X2-Y2)<var )
+		Y1 = joystick.joy1_y1;
+
+		X1 = joystick.joy1_x1;
+
+		X2 = joystick.joy1_x2;
+
+		Y2 = joystick.joy1_y2;
+
+		int x = (X1+X2)/2;
+		int y = (Y1+Y2)/2;
+
+		if(joy1Btn(2) == 1 && press)
 		{
-
-			float average = scale((X1+Y1+X2+Y2)/4, 10, 15);
-			motor[motor1] = average;
-			motor[motor2] = 0;
-			motor[motor3] = average;
-			motor[motor4] = 0;
-
+			driveToggle=!driveToggle;
+			press=false;
 		}
-		else if( abs(Y1+Y2-X1-X2)>=10 && -X1*Y1>=0 && -X2*Y1>=0 && -X1*Y2>=0 && -X2*Y1>=0 && abs(X1+Y1)< var && abs(X2+Y2)< var )
+		else if(joy1Btn(2) != 1)
 		{
-			float average = scale((-X1+Y1-X2+Y2)/4, 10, 15);
-			motor[motor1] = 0;
-			motor[motor2] = average;
-			motor[motor3] = 0;
-			motor[motor4] = average;
-		}
-		else
-		{
-			motor[motor1] = scale(Y1+X1, 10, 15);
-			motor[motor4] = scale(Y1-X1, 10, 15);
-
-			motor[motor2] = scale(Y2-X2, 10, 15);
-			motor[motor3] = scale(Y2+X2, 10, 15);
+			press=true;
 		}
 
-		if(abs(joystick.joy2_y1)>10){
-			motor[intake] = scale(joystick.joy2_y1, 5, 5);
+		if(!driveToggle)
+		{
+			if( X1*Y1>=0 && X2*Y1>=0 && X1*Y2>=0 && X2*Y1>=0 && abs(x+y-10)/sqrt(2)-1.02*sqrt((x-10)*(x-10)+(y-10)*(y-10))-3>0 )
+			{
+
+				float average = scale((X1+Y1+X2+Y2)/4);
+				motor[motor1] = average;
+				motor[motor2] = 0;
+				motor[motor3] = average;
+				motor[motor4] = 0;
+
+			}
+			else if( -X1*Y1>=0 && -X2*Y1>=0 && -X1*Y2>=0 && -X2*Y1>=0 && abs(x+y-10)/sqrt(2)-1.02*sqrt((x-10)*(x-10)+(y-10)*(y-10))-3>0 )
+			{
+				float average = scale((-X1+Y1-X2+Y2)/4);
+				motor[motor1] = 0;
+				motor[motor2] = average;
+				motor[motor3] = 0;
+				motor[motor4] = average;
+			}
+			else
+			{
+				motor[motor1] = scale(Y1+X1);
+				motor[motor4] = scale(Y1-X1);
+
+				motor[motor2] = scale(Y2-X2);
+				motor[motor3] = scale(Y2+X2);
+			}
+		}
+		else
+		{
+			motor[motor1] = scale(Y1+X1, 10, 5, 50);
+			motor[motor4] = scale(Y1-X1, 10, 5, 50);
+
+			motor[motor2] = scale(Y2-X2, 10, 5, 50);
+			motor[motor3] = scale(Y2+X2, 10, 5, 50);
+		}
+
+		if(abs(joystick.joy2_y1)>10)
+		{
+			motor[intake] = scale(joystick.joy2_y1, 5, 5, 100);
 		}
 		else
 		{
