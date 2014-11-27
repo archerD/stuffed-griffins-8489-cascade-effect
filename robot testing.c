@@ -55,33 +55,37 @@ void initializeRobot()
 int currentPosition = 1; //arm position
 void moveTo(int newPosition)
 {
-	//declare variables
-	long distance;
-	long target;
-	long position;
-	long pos1 = 0;
-	long pos2 = 50;
-	long pos3 = 100;
-	long pos4 = 150;
-	long encoderValues[4] = {pos1, pos2, pos3, pos4};
-	nMotorEncoder[arm] = 0;
-
-	//define undefined variables
-	target = encoderValues[newPosition-1];
-	position = encoderValues[currentPosition-1];
-	distance = target - position;
-
-	//start moving arm
-	motor[arm] = 50*distance/abs(distance);
-	//wait to reach target position
-	while(nMotorEncoder[arm] < abs(distance))
+	if(newPosition == currentPosition)
 	{
-		EndTimeSlice();
 	}
-	//stop motor and update current position
-	motor[arm] = 0;
-	currentPosition = newPosition;
-	return;
+	else{
+		//declare variables
+		long distance;
+		long target;
+		long position;
+		long pos1 = 0;
+		long pos2 = 50;
+		long pos3 = 100;
+		long pos4 = 150;
+		long encoderValues[4] = {pos1, pos2, pos3, pos4};
+		nMotorEncoder[arm] = 0;
+
+		//define undefined variables
+		target = encoderValues[newPosition-1];
+		position = encoderValues[currentPosition-1];
+		distance = target - position;
+
+		//start moving arm
+		motor[arm] = 50*distance/abs(distance);
+		//wait to reach target position
+		while(nMotorEncoder[arm] < abs(distance))
+		{
+		}
+		//stop motor and update current position
+		motor[arm] = 0;
+		currentPosition = newPosition;
+		return;
+	}
 }
 
 
@@ -122,7 +126,9 @@ task main()
 	int down = 15;
 	int up = 50;
 	bool servoToggle = false;
-	bool press = false;
+	int armToggle = 1;
+	bool press1 = false;
+	bool press2 = false;
 
 
 	while (true)
@@ -143,17 +149,17 @@ task main()
 		}
 
 		//thomas' goal gripper one button toggle
-		if(joy1Btn(2) == 1 && press)
+		if(joy1Btn(5) == 1 && press1)
 		{
-			servoToggle=!servoToggle;
-			press=false;
+			servoToggle = !servoToggle;
+			press1 = false;
 		}
 		else if(joy1Btn(2) != 1)
 		{
-			press=true;
+			press1 = true;
 		}
 
-		if(servoToggle == false)
+		if(!servoToggle)
 		{
 			servo[goalGripper] = down;
 		}
@@ -162,16 +168,42 @@ task main()
 			servo[goalGripper] = up;
 		}
 
+		//preparing toggle
+		if(joy1Btn(1) == 1 && press2)
+		{
+			armToggle = 1;
+			press2 = false;
+		}
+		else if(joy1Btn(2) == 1 && press2)
+		{
+			armToggle = 2;
+			press2 = false;
+		}
+		else if(joy1Btn(3) == 1 && press2)
+		{
+			armToggle = 3;
+			press2 = false;
+		}
+		else if(joy1Btn(4) == 1 && press2)
+		{
+			armToggle = 4;
+			press2 = false;
+		}
+		else if( !(joy1Btn(1) == 1 || joy1Btn(2) == 1 || joy1Btn(3) == 1 || joy1Btn(4) == 1) )
+		{
+			press2 = false;
+		}
+
 		//need to test.
 		//arm motor
-		if(joy1Btn(1) == 1)
-			startTask(moveTo(1));
-		else if(joy1Btn(2) == 1)
-			startTask(moveTo(2));
-		else if(joy1Btn(3) == 1)
-			startTask(moveTo(3));
-		else if(joy1Btn(4) == 1)
-			startTask(moveTo(4));
+		if(armToggle == 1)
+			moveTo(1);
+		else if(armToggle == 2)
+			moveTo(2);
+		else if(armToggle == 1)
+			moveTo(3);
+		else if(armToggle == 1)
+			moveTo(4);
 
 	}
 
