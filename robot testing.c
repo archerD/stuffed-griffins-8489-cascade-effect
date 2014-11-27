@@ -1,8 +1,12 @@
 #pragma config(Hubs,  S3, HTMotor,  none,     none,     none)
 #pragma config(Hubs,  S4, HTServo,  none,     none,     none)
+#pragma config(Sensor, S3,     ,               sensorI2CMuxController)
+#pragma config(Sensor, S4,     ,               sensorI2CMuxController)
+#pragma config(Motor,  motorB,           ,             tmotorNXT, openLoop)
+#pragma config(Motor,  motorC,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  mtr_S3_C1_1,     intake,        tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S3_C1_2,     arm,           tmotorTetrix, openLoop)
-#pragma config(Servo,  srvo_S4_C1_1,    goalGripper,               tServoNone)
+#pragma config(Servo,  srvo_S4_C1_1,    goalGripper,          tServoNone)
 #pragma config(Servo,  srvo_S4_C1_2,    servo2,               tServoNone)
 #pragma config(Servo,  srvo_S4_C1_3,    servo3,               tServoNone)
 #pragma config(Servo,  srvo_S4_C1_4,    servo4,               tServoNone)
@@ -40,6 +44,37 @@ void initializeRobot()
 	// Place code here to sinitialize servos to starting positions.
 	// Sensors are automatically configured and setup by ROBOTC. They may need a brief time to stabilize.
 
+	return;
+}
+
+//this function is designed for team 8489's arm, it should move it to different positions.
+//the positions are defined by encoder distance form position 1.  There are four positions.
+//as input it needs the position wanted to be reached, and it needs access to variable currentPosition,
+//which must have the number of the current position.
+
+int currentPosition = 1;
+void moveTo(int newPosition)
+{
+	long distance;
+	long target;
+	long position;
+	long pos1 = 0;
+	long pos2 = 50;
+	long pos3 = 100;
+	long pos4 = 150;
+	long encoderValues[4] = {pos1, pos2, pos3, pos4};
+	nMotorEncoder[arm] = 0;
+
+	target = encoderValues[newPosition-1];
+	position = encoderValues[currentPosition-1];
+	distance = target - position;
+
+	motor[arm] = 50*distance/abs(distance);
+	while(nMotorEncoder[arm] <= abs(distance))
+	{
+	}
+	motor[arm] = 0;
+	currentPosition = newPosition;
 	return;
 }
 
@@ -104,6 +139,7 @@ task main()
 	bool servoToggle = false;
 	bool press = false;
 
+
 	while (true)
 	{
 		getJoystickSettings(joystick);
@@ -145,7 +181,14 @@ task main()
 			servo[goalGripper] = up;
 		}
 
-
+		if(joy1Btn(1) == 1)
+			moveTo(1);
+		else if(joy1Btn(2) == 1)
+			moveTo(2);
+		else if(joy1Btn(3) == 1)
+			moveTo(3);
+		else if(joy1Btn(4) == 1)
+			moveTo(4);
 
 	}
 
