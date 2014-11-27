@@ -26,7 +26,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "JoystickDriver.c"  //Include file to "handle" the Bluetooth messages.
-
+#include "StuffedGriffinsFunctions.c"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -74,35 +74,14 @@ void moveTo(int newPosition)
 	//start moving arm
 	motor[arm] = 50*distance/abs(distance);
 	//wait to reach target position
-	while(nMotorEncoder[arm] <= abs(distance))
+	while(nMotorEncoder[arm] < abs(distance))
 	{
+		EndTimeSlice();
 	}
 	//stop motor and update current position
 	motor[arm] = 0;
 	currentPosition = newPosition;
 	return;
-}
-
-//this function is designed to take joystick input, create a deadzone, and scale the input for output to motors.
-int scale(int joyValue)
-{
-	//create deadzone
-	if(joyValue < 5)
-	{
-		return 0;
-	}
-	else //scale input value
-	{
-		long step1 = joyValue * joyValue;
-		long step2 = step1 * joyValue;
-		long step3 = step2 * (85);
-		float step4 = step3 / 14884;
-		long step5 = step4 / abs(joyValue);
-		int step6 = 10 * joyValue;
-		int step7 = step6 / abs(joyValue);
-		int final = step5 + step7;
-		return final;
-	}
 }
 
 
@@ -186,13 +165,13 @@ task main()
 		//need to test.
 		//arm motor
 		if(joy1Btn(1) == 1)
-			moveTo(1);
+			startTask(moveTo(1));
 		else if(joy1Btn(2) == 1)
-			moveTo(2);
+			startTask(moveTo(2));
 		else if(joy1Btn(3) == 1)
-			moveTo(3);
+			startTask(moveTo(3));
 		else if(joy1Btn(4) == 1)
-			moveTo(4);
+			startTask(moveTo(4));
 
 	}
 

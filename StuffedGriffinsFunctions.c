@@ -1,6 +1,12 @@
-//////////////////////////////////
+////////////////////////////////////
 //
+//    Stuffed Griffins Functions
 //
+// This contains functions created
+// by the 8489 Stuffed Griffins in
+// the 2014-2015 season.
+//
+////////////////////////////////////
 
 
 
@@ -52,4 +58,29 @@ int scale(int joyValue, short minMotorPower, short threshold, short maxMotorPowe
 		int final = step5 + step7;
 		return final;
 	}
+}
+
+//Drive forward function
+//time_seconds = How many seconds you want it to drive
+//X = X speed
+//Y = Y speed
+//R = Rotation speed
+void autoDrive (int time_seconds, int X, int Y, int R, tMotor frontLeft, tMotor frontRight, tMotor backRight, tMotor backLeft)
+{
+	//Drive
+	motor[frontRight] = -Y + R - X;
+	motor[backRight] =  -Y + R + X;
+	motor[frontLeft] = -Y - R + X;
+	motor[backLeft] =  -Y - R - X;
+
+	//wait for _ seconds
+	wait(time_seconds);
+
+	//Reset motors
+	motor[frontLeft] = 0;
+	motor[backLeft] = 0;
+	motor[frontRight] = 0;
+	motor[backRight] = 0;
+
+	return;
 }
