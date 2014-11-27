@@ -52,9 +52,10 @@ void initializeRobot()
 //as input it needs the position wanted to be reached, and it needs access to variable currentPosition,
 //which must have the number of the current position.
 
-int currentPosition = 1;
+int currentPosition = 1; //arm position
 void moveTo(int newPosition)
 {
+	//declare variables
 	long distance;
 	long target;
 	long position;
@@ -65,34 +66,39 @@ void moveTo(int newPosition)
 	long encoderValues[4] = {pos1, pos2, pos3, pos4};
 	nMotorEncoder[arm] = 0;
 
+	//define undefined variables
 	target = encoderValues[newPosition-1];
 	position = encoderValues[currentPosition-1];
 	distance = target - position;
 
+	//start moving arm
 	motor[arm] = 50*distance/abs(distance);
+	//wait to reach target position
 	while(nMotorEncoder[arm] <= abs(distance))
 	{
 	}
+	//stop motor and update current position
 	motor[arm] = 0;
 	currentPosition = newPosition;
 	return;
 }
 
+//this function is designed to take joystick input, create a deadzone, and scale the input for output to motors.
 int scale(int joyValue)
 {
-	if(joyValue == 0)
+	//create deadzone
+	if(joyValue < 5)
 	{
 		return 0;
 	}
-	else
+	else //scale input value
 	{
-		int movementThreshold = 10;
 		long step1 = joyValue * joyValue;
 		long step2 = step1 * joyValue;
-		long step3 = step2 * (100-movementThreshold);
-		float step4 = step3 / 16129;
+		long step3 = step2 * (85);
+		float step4 = step3 / 14884;
 		long step5 = step4 / abs(joyValue);
-		int step6 = movementThreshold * joyValue;
+		int step6 = 10 * joyValue;
 		int step7 = step6 / abs(joyValue);
 		int final = step5 + step7;
 		return final;
@@ -144,14 +150,10 @@ task main()
 	{
 		getJoystickSettings(joystick);
 
-		if(abs(joystick.joy1_y1)>10){
-			motor[intake] = scale(joystick.joy1_y1);
-		}
-		else
-		{
-			motor[intake] = 0;
-		}
+		//drive intake
+		motor[intake] = scale(joystick.joy1_y1);
 
+		//goal gripper
 		if(joystick.joy1_TopHat == 0)
 		{
 			servoTarget[goalGripper] = up;
@@ -161,7 +163,7 @@ task main()
 			servoTarget[goalGripper] = down;
 		}
 
-
+		//thomas' goal gripper one button toggle
 		if(joy1Btn(2) == 1 && press)
 		{
 			servoToggle=!servoToggle;
@@ -181,6 +183,8 @@ task main()
 			servo[goalGripper] = up;
 		}
 
+		//need to test.
+		//arm motor
 		if(joy1Btn(1) == 1)
 			moveTo(1);
 		else if(joy1Btn(2) == 1)

@@ -51,25 +51,25 @@
 void initializeRobot()
 {
 	servo[goalGripper] = 50;
-	wait1Msec(1000);
-
 	return;
 }
-//this function is designed to take joystick input, create a deadzone, and scale it
+
+//this function is designed to take joystick input, create a deadzone, and scale the input for output to motors.
 int scale(int joyValue)
 {
-	if(abs(joyValue) < 5)
+	//create deadzone
+	if(joyValue < 5)
 	{
 		return 0;
 	}
-	else
+	else //scale input value
 	{
 		long step1 = joyValue * joyValue;
 		long step2 = step1 * joyValue;
 		long step3 = step2 * (85);
 		float step4 = step3 / 14884;
 		long step5 = step4 / abs(joyValue);
-		int step6 = 15 * joyValue;
+		int step6 = 10 * joyValue;
 		int step7 = step6 / abs(joyValue);
 		int final = step5 + step7;
 		return final;
@@ -81,11 +81,12 @@ int scale(int joyValue)
 //threshold, for the size of the deadzone, and maxMotorPower, the maximum power possible for the diriection.
 int scale(int joyValue, short minMotorPower, short threshold, short maxMotorPower)
 {
+	//create deadzone
 	if(abs(joyValue) < threshold)
 	{
 		return 0;
 	}
-	else
+	else //scale input value
 	{
 		long step1prepA = threshold * joyValue;
 		long step1prepB = step1prepA / abs(joyValue);
@@ -136,29 +137,26 @@ task main()
 
 	waitForStart();   // wait for start of tele-op phase
 
+	//declare variables
 	int X2 = 0, Y1 = 0, X1 = 0, Y2 = 0;
-
 	int down = 15;
 	int up = 50;
-
 	bool driveToggle = false;
 	bool press = false;
 
 	while (true)
 	{
+		//update joystick
 		getJoystickSettings(joystick);
-
 		Y1 = joystick.joy1_y1;
-
 		X1 = joystick.joy1_x1;
-
 		X2 = joystick.joy1_x2;
-
 		Y2 = joystick.joy1_y2;
 
 		int x = (X1+X2)/2;
 		int y = (Y1+Y2)/2;
 
+		//create toggle for slow drive.  use button 1 to toggle.
 		if(joy1Btn(2) == 1 && press)
 		{
 			driveToggle=!driveToggle;
@@ -171,6 +169,7 @@ task main()
 
 		if(!driveToggle)
 		{
+			//normal drive with diagonal zones, first controller joysticks
 			if( X1*Y1>=0 && X2*Y1>=0 && X1*Y2>=0 && X2*Y1>=0 && abs(x+y-10)/sqrt(2)-1.02*sqrt((x-10)*(x-10)+(y-10)*(y-10))-3>0 )
 			{
 
@@ -198,7 +197,7 @@ task main()
 				motor[motor3] = scale(Y2+X2);
 			}
 		}
-		else
+		else //slow drive, no diagonal zones, first controller joysticks
 		{
 			motor[motor1] = scale(Y1+X1, 10, 5, 50);
 			motor[motor4] = scale(Y1-X1, 10, 5, 50);
@@ -207,23 +206,17 @@ task main()
 			motor[motor3] = scale(Y2+X2, 10, 5, 50);
 		}
 
-		if(abs(joystick.joy2_y1)>10)
-		{
-			motor[intake] = scale(joystick.joy2_y1, 5, 5, 100);
-		}
-		else
-		{
-			motor[intake] = 0;
-		}
+		//intake control, second controller left y-axis
+		motor[intake] = scale(joystick.joy2_y1, 5, 5, 100);
 
-
+		//goal gripper control, second controller left bumper moves up, second controller left trigger moves down
 		if(joy2Btn(5) == 1)
 		{
-			servoTarget[goalGripper] = up;
+			servo[goalGripper] = up;
 		}
 		if(joy2Btn(7) == 1)
 		{
-			servoTarget[goalGripper] = down;
+			servo[goalGripper] = down;
 		}
 
 	}
