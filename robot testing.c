@@ -166,35 +166,47 @@ task main()
 
 		//need to test.
 		//arm motor
-		if(joy1Btn(1) == 1 && !bDoesTaskOwnSemaphore(armLock))
+		if(joy1Btn(1) == 1)
 		{
 			semaphoreLock(armLock);
-			newPosition = 1;
-			startTask(moveTo);
+			if(bDoesTaskOwnSemaphore(armLock))
+			{
+				newPosition = 1;
+				startTask(moveTo);
+			}
 			if(bDoesTaskOwnSemaphore(armLock))
 				semaphoreUnlock(armLock);
 		}
-		else if(joy1Btn(2) == 1 && !bDoesTaskOwnSemaphore(armLock))
+		else if(joy1Btn(2) == 1)
 		{
-			semaphoreLock(armLock);
-			newPosition = 2;
-			startTask(moveTo);
+			if(bDoesTaskOwnSemaphore(armLock))
+			{
+				semaphoreLock(armLock);
+				newPosition = 2;
+				startTask(moveTo);
+			}
 			if(bDoesTaskOwnSemaphore(armLock))
 				semaphoreUnlock(armLock);
 		}
-		else if(joy1Btn(3) == 1 && !bDoesTaskOwnSemaphore(armLock))
+		else if(joy1Btn(3) == 1)
 		{
-			semaphoreLock(armLock);
-			newPosition = 3;
-			startTask(moveTo);
+			if(bDoesTaskOwnSemaphore(armLock))
+			{
+				semaphoreLock(armLock);
+				newPosition = 3;
+				startTask(moveTo);
+			}
 			if(bDoesTaskOwnSemaphore(armLock))
 				semaphoreUnlock(armLock);
 		}
-		else if(joy1Btn(4) == 1 && !bDoesTaskOwnSemaphore(armLock))
+		else if(joy1Btn(4) == 1)
 		{
-			semaphoreLock(armLock);
-			newPosition = 4;
-			startTask(moveTo);
+			if(bDoesTaskOwnSemaphore(armLock))
+			{
+				semaphoreLock(armLock);
+				newPosition = 4;
+				startTask(moveTo);
+			}
 			if(bDoesTaskOwnSemaphore(armLock))
 				semaphoreUnlock(armLock);
 		}
