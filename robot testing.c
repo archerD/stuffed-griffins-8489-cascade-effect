@@ -47,13 +47,15 @@ void initializeRobot()
 	return;
 }
 
-//this function is designed for team 8489's arm, it should move it to different positions.
+//this task is designed for team 8489's arm, it should move it to different positions.
 //the positions are defined by encoder distance form position 1.  There are four positions.
 //as input it needs the position wanted to be reached, and it needs access to variable currentPosition,
 //which must have the number of the current position.
 
 int currentPosition = 1; //arm position
-void moveTo(int newPosition)
+int newPosition;
+TSemaphore armLock;
+task moveTo()
 {
 	//declare variables
 	long distance;
@@ -123,7 +125,7 @@ task main()
 	int up = 50;
 	bool servoToggle = false;
 	bool press = false;
-
+	semaphoreInitialize(armLock);
 
 	while (true)
 	{
@@ -164,14 +166,38 @@ task main()
 
 		//need to test.
 		//arm motor
-		if(joy1Btn(1) == 1)
-			startTask(moveTo(1));
-		else if(joy1Btn(2) == 1)
-			startTask(moveTo(2));
-		else if(joy1Btn(3) == 1)
-			startTask(moveTo(3));
-		else if(joy1Btn(4) == 1)
-			startTask(moveTo(4));
+		if(joy1Btn(1) == 1 && !bDoesTaskOwnSemaphore(armLock))
+		{
+			semaphoreLock(armLock);
+			newPosition = 1;
+			startTask(moveTo);
+			if(bDoesTaskOwnSemaphore(armLock))
+				semaphoreUnlock(armLock);
+		}
+		else if(joy1Btn(2) == 1 && !bDoesTaskOwnSemaphore(armLock))
+		{
+			semaphoreLock(armLock);
+			newPosition = 2;
+			startTask(moveTo);
+			if(bDoesTaskOwnSemaphore(armLock))
+				semaphoreUnlock(armLock);
+		}
+		else if(joy1Btn(3) == 1 && !bDoesTaskOwnSemaphore(armLock))
+		{
+			semaphoreLock(armLock);
+			newPosition = 3;
+			startTask(moveTo);
+			if(bDoesTaskOwnSemaphore(armLock))
+				semaphoreUnlock(armLock);
+		}
+		else if(joy1Btn(4) == 1 && !bDoesTaskOwnSemaphore(armLock))
+		{
+			semaphoreLock(armLock);
+			newPosition = 4;
+			startTask(moveTo);
+			if(bDoesTaskOwnSemaphore(armLock))
+				semaphoreUnlock(armLock);
+		}
 
 	}
 
