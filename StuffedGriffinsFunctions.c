@@ -76,7 +76,7 @@ void autoDrive (int time_seconds, int X, int Y, int R, tMotor frontLeft, tMotor 
 	motor[backLeft] =  -Y - R - X;
 
 	//wait for _ seconds
-	wait(time_seconds);
+	wait1Msec(1000*time_seconds);
 
 	//Reset motors
 	motor[frontLeft] = 0;
