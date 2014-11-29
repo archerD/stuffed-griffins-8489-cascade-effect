@@ -57,33 +57,36 @@ int newPosition;
 TSemaphore armLock;
 task moveTo()
 {
-	//declare variables
-	long distance;
-	long target;
-	long position;
-	long pos1 = 0;
-	long pos2 = 50;
-	long pos3 = 100;
-	long pos4 = 150;
-	long encoderValues[4] = {pos1, pos2, pos3, pos4};
-	nMotorEncoder[arm] = 0;
-
-	//define undefined variables
-	target = encoderValues[newPosition-1];
-	position = encoderValues[currentPosition-1];
-	distance = target - position;
-
-	//start moving arm
-	motor[arm] = 50*distance/abs(distance);
-	//wait to reach target position
-	while(nMotorEncoder[arm] < abs(distance))
+	void moveTo(int newPosition)
 	{
-		EndTimeSlice();
+		//declare variables
+		long distance;
+		long target;
+		long position;
+		long pos1 = 0;
+		long pos2 = 50;
+		long pos3 = 100;
+		long pos4 = 150;
+		long encoderValues[4] = {pos1, pos2, pos3, pos4};
+		nMotorEncoder[arm] = 0;
+
+		//define undefined variables
+		target = encoderValues[newPosition-1];
+		position = encoderValues[currentPosition-1];
+		distance = target - position;
+
+		//start moving arm
+		motor[arm] = 50*distance/abs(distance);
+		//wait to reach target position
+		while(nMotorEncoder[arm] < abs(distance))
+		{
+			EndTimeSlice();
+		}
+		//stop motor and update current position
+		motor[arm] = 0;
+		currentPosition = newPosition;
+		return;
 	}
-	//stop motor and update current position
-	motor[arm] = 0;
-	currentPosition = newPosition;
-	return;
 }
 
 
@@ -172,7 +175,7 @@ task main()
 			if(bDoesTaskOwnSemaphore(armLock))
 			{
 				newPosition = 1;
-				startTask(moveTo);
+				startTask(moveTo(1));
 			}
 			if(bDoesTaskOwnSemaphore(armLock))
 				semaphoreUnlock(armLock);
@@ -183,7 +186,7 @@ task main()
 			{
 				semaphoreLock(armLock);
 				newPosition = 2;
-				startTask(moveTo);
+				startTask(moveTo(2));
 			}
 			if(bDoesTaskOwnSemaphore(armLock))
 				semaphoreUnlock(armLock);
@@ -194,7 +197,7 @@ task main()
 			{
 				semaphoreLock(armLock);
 				newPosition = 3;
-				startTask(moveTo);
+				startTask(moveTo(3));
 			}
 			if(bDoesTaskOwnSemaphore(armLock))
 				semaphoreUnlock(armLock);
@@ -205,7 +208,7 @@ task main()
 			{
 				semaphoreLock(armLock);
 				newPosition = 4;
-				startTask(moveTo);
+				startTask(4);
 			}
 			if(bDoesTaskOwnSemaphore(armLock))
 				semaphoreUnlock(armLock);
