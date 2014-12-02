@@ -1,3 +1,4 @@
+#pragma systemFile
 ////////////////////////////////////
 //
 //    Stuffed Griffins Functions
@@ -14,7 +15,7 @@
 int scale(int joyValue)
 {
 	//create deadzone
-	if(joyValue < 5)
+	if(abs(joyValue) < 5)
 	{
 		return 0;
 	}
