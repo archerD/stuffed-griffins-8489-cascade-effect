@@ -62,7 +62,7 @@ task main()
 		else if(nNxtButtonPressed == 1)
 		{
 			eraseDisplay();
-			write(1);
+			write(2);
 			ramp = false;
 			nxtDisplayCenteredTextLine(4, "parking zone");
 			nxtDisplayCenteredTextLine(5, "selected");
