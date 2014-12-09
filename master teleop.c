@@ -35,7 +35,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "JoystickDriver.c"  //Include file to "handle" the Bluetooth messages.
-#include "mecanumDriveFunctions.c" //include drive files
+#include "StuffedGriffinsFunctions.c" //include drive files
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -50,8 +50,6 @@
 
 void initializeRobot()
 {
-	servo[goalGripper] = 50;
-	return;
 }
 
 
