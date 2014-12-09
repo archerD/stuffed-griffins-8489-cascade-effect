@@ -15,8 +15,8 @@ byte lastRead()
 	byte N;
 	TFileIOResult result;
 	ReadByte(readFrom, result, N);
-	return N;
 	errorCheck(result);
+	return N;
 }
 
 task main()
@@ -39,10 +39,10 @@ task main()
 		eraseDisplay();
 	}
 
-  read = lastRead();
+	read = lastRead();
 
-  if(read == 1)
-  {
+	if(read == 1)
+	{
 		nxtDisplayCenteredTextLine(3, "ball tube");
 		wait(2);
 		eraseDisplay();
@@ -67,4 +67,5 @@ task main()
 	}
 
 	Close(readFrom, result);
+	errorCheck(result);
 }

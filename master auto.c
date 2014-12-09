@@ -53,12 +53,62 @@
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+bool ramp;
+bool rollingGoal = false;
+bool centerGoal = false;
+bool kickstand = false;
+TFileHandle readFrom;
+TFileIOResult result;
+
+byte lastRead()
+{
+	byte N;
+	TFileIOResult result;
+	ReadByte(readFrom, result, N);
+	return N;
+}
+
 void initializeRobot()
 {
-  // Place code here to sinitialize servos to starting positions.
-  // Sensors are automatically configured and setup by ROBOTC. They may need a brief time to stabilize.
+	// setting auto program variables
 
-  return;
+	word currentSize;
+	OpenRead(readFrom, result, "auto.txt", currentSize);
+
+	byte read = lastRead();
+	if(read == 1)
+	{
+		ramp = true;
+	}
+	else if(read == 2)
+	{
+		ramp = false;
+	}
+
+	read = lastRead();
+
+	if(read == 1)
+	{
+		rollingGoal = true;
+	}
+
+	read = lastRead();
+
+	if(read == 1)
+	{
+		centerGoal = true;
+	}
+
+	read = lastRead();
+
+	if(read == 1)
+	{
+		kickstand = true;
+	}
+
+	Close(readFrom, result);
+
+	return;
 }
 
 
@@ -85,24 +135,41 @@ void initializeRobot()
 
 task main()
 {
-  initializeRobot();
+	initializeRobot();
 
-  waitForStart(); // Wait for the beginning of autonomous phase.
+	waitForStart(); // Wait for the beginning of autonomous phase.
 
-  servo[goalGripper] = 50;
+	servo[goalGripper] = 50;
 
-  autoDrive(5, 0, -85, 0);
+	if(ramp)
+	{
+		autoDrive(4, 0, -85, 0);
+		if(rollingGoal)
+		{
+			autoDrive(3, 0, -85, 0);
+			servo[goalGripper] = 15;
 
-  servo[goalGripper] = 15;
+			autoDrive(2, 85, 0, 0);
 
-  autoDrive(2, 85, 0, 0);
+			autoDrive(7, 0, 85, 0);
 
-  autoDrive(5, 0, 85, 0);
+			autoDrive(1, 0, 0, 85);
 
-  autoDrive(1, 0, 0, 85);
+			autoDrive(0.5, 0, -85, 0);
 
-  autoDrive(1, 0, -85, 0);
+		}
+	}
 
-  while (true)
-  {}
+	if(!ramp && rollingGoal)
+	{
+		autoDrive(0.5, -85, 0, 0);
+		autoDrive(8, 0, -85, 0);
+		servo[goalGripper] = 15;
+		autoDrive(8, 0, 85, 0);
+		autoDrive(1, 0, 0, 85);
+		autoDrive(0.5, 0, -85, 0);
+	}
+
+	while (true)
+	{}
 }
