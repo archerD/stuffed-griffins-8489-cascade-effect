@@ -104,12 +104,12 @@ task main()
 		int y = (Y1+Y2)/2;
 
 		//create toggle for slow drive.  use button 1 to toggle.
-		if(joy1Btn(2) == 1 && press)
+		if(joy1Btn(5) == 1 && press)
 		{
 			driveToggle=!driveToggle;
 			press=false;
 		}
-		else if(joy1Btn(2) != 1)
+		else if(joy1Btn(5) != 1)
 		{
 			press=true;
 		}
@@ -137,11 +137,11 @@ task main()
 			}
 			else
 			{
-				motor[motor1] = scale(Y1+X1);
-				motor[motor4] = scale(Y1-X1);
+				motor[motor1] = scale(Y2+X2);
+				motor[motor4] = scale(Y2-X2);
 
-				motor[motor2] = scale(Y2-X2);
-				motor[motor3] = scale(Y2+X2);
+				motor[motor2] = scale(Y1-X1);
+				motor[motor3] = scale(Y1+X1);
 			}
 		}
 		else //slow drive, no diagonal zones, first controller joysticks
