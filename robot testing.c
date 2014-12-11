@@ -118,99 +118,99 @@ task moveTo()
 
 task main()
 {
-initializeRobot();
+	initializeRobot();
 
-waitForStart();   // wait for start of tele-op phase
-int down = 15;
-int up = 50;
-bool servoToggle = false;
-bool press = false;
-semaphoreInitialize(armLock);
+	waitForStart();   // wait for start of tele-op phase
+	int down = 15;
+	int up = 50;
+	bool servoToggle = false;
+	bool press = false;
+	semaphoreInitialize(armLock);
 
-while (true)
-{
-	getJoystickSettings(joystick);
+	while (true)
+	{
+		getJoystickSettings(joystick);
 
-	//drive intake
-	motor[intake] = scale(joystick.joy1_y1);
+		//drive intake
+		motor[intake] = scale(joystick.joy1_y1);
 
-	//goal gripper
-	if(joystick.joy1_TopHat == 0)
-	{
-		servoTarget[goalGripper] = up;
-	}
-	if(joystick.joy1_TopHat == 4)
-	{
-		servoTarget[goalGripper] = down;
-	}
-
-	//thomas' goal gripper one button toggle
-	if(joy1Btn(2) == 1 && press)
-	{
-		servoToggle=!servoToggle;
-		press=false;
-	}
-	else if(joy1Btn(2) != 1)
-	{
-		press=true;
-	}
-
-	if(servoToggle == false)
-	{
-		servo[goalGripper] = down;
-	}
-	else if(servoToggle == true)
-	{
-		servo[goalGripper] = up;
-	}
-
-	//need to test.
-	//arm motor
-	if(joy1Btn(1) == 1)
-	{
-		semaphoreLock(armLock);
-		if(bDoesTaskOwnSemaphore(armLock))
+		//goal gripper
+		if(joystick.joy1_TopHat == 0)
 		{
-			newPosition = 1;
-			startTask(moveTo);
+			servoTarget[goalGripper] = up;
 		}
-		if(bDoesTaskOwnSemaphore(armLock))
-			semaphoreUnlock(armLock);
-	}
-	else if(joy1Btn(2) == 1)
-	{
-		if(bDoesTaskOwnSemaphore(armLock))
+		if(joystick.joy1_TopHat == 4)
+		{
+			servoTarget[goalGripper] = down;
+		}
+
+		//thomas' goal gripper one button toggle
+		if(joy1Btn(2) == 1 && press)
+		{
+			servoToggle=!servoToggle;
+			press=false;
+		}
+		else if(joy1Btn(2) != 1)
+		{
+			press=true;
+		}
+
+		if(servoToggle == false)
+		{
+			servo[goalGripper] = down;
+		}
+		else if(servoToggle == true)
+		{
+			servo[goalGripper] = up;
+		}
+
+		//need to test.
+		//arm motor
+		if(joy1Btn(1) == 1)
 		{
 			semaphoreLock(armLock);
-			newPosition = 2;
-			startTask(moveTo);
+			if(bDoesTaskOwnSemaphore(armLock))
+			{
+				newPosition = 1;
+				startTask(moveTo);
+			}
+			if(bDoesTaskOwnSemaphore(armLock))
+				semaphoreUnlock(armLock);
 		}
-		if(bDoesTaskOwnSemaphore(armLock))
-			semaphoreUnlock(armLock);
-	}
-	else if(joy1Btn(3) == 1)
-	{
-		if(bDoesTaskOwnSemaphore(armLock))
+		else if(joy1Btn(2) == 1)
 		{
-			semaphoreLock(armLock);
-			newPosition = 3;
-			startTask(moveTo);
+			if(bDoesTaskOwnSemaphore(armLock))
+			{
+				semaphoreLock(armLock);
+				newPosition = 2;
+				startTask(moveTo);
+			}
+			if(bDoesTaskOwnSemaphore(armLock))
+				semaphoreUnlock(armLock);
 		}
-		if(bDoesTaskOwnSemaphore(armLock))
-			semaphoreUnlock(armLock);
-	}
-	else if(joy1Btn(4) == 1)
-	{
-		if(bDoesTaskOwnSemaphore(armLock))
+		else if(joy1Btn(3) == 1)
 		{
-			semaphoreLock(armLock);
-			newPosition = 4;
-			startTask(moveTo);
+			if(bDoesTaskOwnSemaphore(armLock))
+			{
+				semaphoreLock(armLock);
+				newPosition = 3;
+				startTask(moveTo);
+			}
+			if(bDoesTaskOwnSemaphore(armLock))
+				semaphoreUnlock(armLock);
 		}
-		if(bDoesTaskOwnSemaphore(armLock))
-			semaphoreUnlock(armLock);
-	}
+		else if(joy1Btn(4) == 1)
+		{
+			if(bDoesTaskOwnSemaphore(armLock))
+			{
+				semaphoreLock(armLock);
+				newPosition = 4;
+				startTask(moveTo);
+			}
+			if(bDoesTaskOwnSemaphore(armLock))
+				semaphoreUnlock(armLock);
+		}
 
-}
+	}
 
 }
