@@ -15,7 +15,7 @@
 int scale(int joyValue)
 {
 	//create deadzone
-	if(abs(joyValue) < 5)
+	if(abs(joyValue) < 10)
 	{
 		return 0;
 	}
