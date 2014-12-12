@@ -11,7 +11,7 @@
 #pragma config(Motor,  mtr_S1_C2_2,     motor3,        tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S2_C2_1,     intake,        tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S2_C2_2,     arm,           tmotorTetrix, openLoop)
-#pragma config(Servo,  srvo_S2_C1_1,    goalGripper,          tServoNone)
+#pragma config(Servo,  srvo_S2_C1_1,    goalGripper,          tServoStandard)
 #pragma config(Servo,  srvo_S2_C1_2,    servo2,               tServoNone)
 #pragma config(Servo,  srvo_S2_C1_3,    servo3,               tServoNone)
 #pragma config(Servo,  srvo_S2_C1_4,    servo4,               tServoNone)
