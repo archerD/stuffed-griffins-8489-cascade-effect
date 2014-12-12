@@ -46,8 +46,6 @@
 
 void initializeRobot()
 {
-	servo[goalGripper] = 50;
-	return;
 }
 
 
