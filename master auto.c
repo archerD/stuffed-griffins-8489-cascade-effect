@@ -154,14 +154,22 @@ task main()
 		}
 	}
 
-	if(!ramp && rollingGoal)
+	if(!ramp)
 	{
-		autoDrive(0.5, -85, 0, 0);
-		autoDrive(8, 0, -85, 0);
-		servo[goalGripper] = 15;
-		autoDrive(8, 0, 85, 0);
-		autoDrive(1, 0, 0, 85);
-		autoDrive(0.5, 0, -85, 0);
+		if(rollingGoal)
+		{
+			autoDrive(0.5, -85, 0, 0);
+			autoDrive(8, 0, -85, 0);
+			servo[goalGripper] = 15;
+			autoDrive(8, 0, 85, 0);
+			autoDrive(1, 0, 0, 85);
+			autoDrive(0.5, 0, -85, 0);
+		}
+		if(kickstand)
+		{
+			autoDrive(2, 0, -50, 9);
+			autoDrive(1, 0, -10, -100);
+		}
 	}
 
 	while (true)

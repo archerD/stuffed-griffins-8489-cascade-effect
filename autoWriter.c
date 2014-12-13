@@ -74,36 +74,38 @@ task main()
 	eraseDisplay();
 
 
-	while(true)
-	{
-		eraseDisplay();
-		nxtDisplayCenteredTextLine(1, "Should the robot");
-		nxtDisplayCenteredTextLine(2, "get the ball tube");
-		nxtDisplayCenteredTextLine(3, "right for yes");
-		nxtDisplayCenteredTextLine(4, "left for no");
+	//while(true)
+	//{
+	//	eraseDisplay();
+	//	nxtDisplayCenteredTextLine(1, "Should the robot");
+	//	nxtDisplayCenteredTextLine(2, "get the ball tube");
+	//	nxtDisplayCenteredTextLine(3, "right for yes");
+	//	nxtDisplayCenteredTextLine(4, "left for no");
 
-		while(nNxtButtonPressed == -1)
-		{
-		}
-		if(nNxtButtonPressed == 1)
-		{
-			eraseDisplay();
-			write(1);
-			nxtDisplayCenteredTextLine(4, "robot will get");
-			nxtDisplayCenteredTextLine(5, "ball tube");
-			wait1Msec(2000);
-			break;
-		}
-		else if(nNxtButtonPressed == 2)
-		{
-			eraseDisplay();
-			write(2);
-			nxtDisplayCenteredTextLine(4, "robot will not");
-			nxtDisplayCenteredTextLine(5, "get ball tube");
-			wait1Msec(2000);
-			break;
-		}
-	}
+	//	while(nNxtButtonPressed == -1)
+	//	{
+	//	}
+	//	if(nNxtButtonPressed == 1)
+	//	{
+	//		eraseDisplay();
+	//		write(1);
+	//		nxtDisplayCenteredTextLine(4, "robot will get");
+	//		nxtDisplayCenteredTextLine(5, "ball tube");
+	//		wait1Msec(2000);
+	//		break;
+	//	}
+	//	else if(nNxtButtonPressed == 2)
+	//	{
+	//		eraseDisplay();
+	//		write(2);
+	//		nxtDisplayCenteredTextLine(4, "robot will not");
+	//		nxtDisplayCenteredTextLine(5, "get ball tube");
+	//		wait1Msec(2000);
+	//		break;
+	//	}
+	//}
+
+	write(2);
 
 	//eraseDisplay();
 
@@ -141,44 +143,44 @@ task main()
 	//	}
 	//}
 
-	//eraseDisplay();
-
-	//while(true)
-	//{
-	//	eraseDisplay();
-	//	nxtDisplayCenteredTextLine(1, "Should the robot");
-	//	nxtDisplayCenteredTextLine(2, "knock down the");
-	//	nxtDisplayCenteredTextLine(3, "kickstand");
-	//	nxtDisplayCenteredTextLine(4, "right for yes");
-	//	nxtDisplayCenteredTextLine(5, "left for no");
-
-	//	while(nNxtButtonPressed == -1)
-	//	{
-	//	}
-	//	if(nNxtButtonPressed == 1)
-	//	{
-	//		eraseDisplay();
-	//		write(1);
-	//		nxtDisplayCenteredTextLine(3, "robot will knock");
-	//		nxtDisplayCenteredTextLine(4, "down the");
-	//		nxtDisplayCenteredTextLine(5, "kickstand");
-	//		wait1Msec(2000);
-	//		break;
-	//	}
-	//	else if(nNxtButtonPressed == 2)
-	//	{
-	//		eraseDisplay();
-	//		write(2);
-	//		nxtDisplayCenteredTextLine(3, "robot will not");
-	//		nxtDisplayCenteredTextLine(4, "knock down the");
-	//		nxtDisplayCenteredTextLine(5, "kickstand");
-	//		wait1Msec(2000);
-	//		break;
-	//	}
-	//}
-
 	write(2);
-	write(2);
+
+	eraseDisplay();
+
+	while(true)
+	{
+		eraseDisplay();
+		nxtDisplayCenteredTextLine(1, "Should the robot");
+		nxtDisplayCenteredTextLine(2, "knock down the");
+		nxtDisplayCenteredTextLine(3, "kickstand");
+		nxtDisplayCenteredTextLine(4, "right for yes");
+		nxtDisplayCenteredTextLine(5, "left for no");
+
+		while(nNxtButtonPressed == -1)
+		{
+		}
+		if(nNxtButtonPressed == 1)
+		{
+			eraseDisplay();
+			write(1);
+			nxtDisplayCenteredTextLine(3, "robot will knock");
+			nxtDisplayCenteredTextLine(4, "down the");
+			nxtDisplayCenteredTextLine(5, "kickstand");
+			wait1Msec(2000);
+			break;
+		}
+		else if(nNxtButtonPressed == 2)
+		{
+			eraseDisplay();
+			write(2);
+			nxtDisplayCenteredTextLine(3, "robot will not");
+			nxtDisplayCenteredTextLine(4, "knock down the");
+			nxtDisplayCenteredTextLine(5, "kickstand");
+			wait1Msec(2000);
+			break;
+		}
+	}
+
 
 	Close(writeTo, result);
 	errorCheck(result);
