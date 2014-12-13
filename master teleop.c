@@ -84,8 +84,8 @@ task main()
 
 	//declare variables
 	int X2 = 0, Y1 = 0, X1 = 0, Y2 = 0;
-	int down = 5;
-	int up = 100;
+	int down = 100;
+	int up = 5;
 	bool driveToggle = false;
 	bool press = false;
 
