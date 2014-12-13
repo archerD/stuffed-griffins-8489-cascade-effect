@@ -137,7 +137,7 @@ task main()
 
 	if(ramp)
 	{
-		autoDrive(3, 0, -50, 0);
+		autoDrive(2, 0, -50, 9);
 		if(rollingGoal)
 		{
 			autoDrive(3, 0, -85, 0);
