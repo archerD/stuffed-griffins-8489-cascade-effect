@@ -140,35 +140,45 @@ task main()
 		autoDrive(2, 0, -50, 9);
 		if(rollingGoal)
 		{
-			autoDrive(3, 0, -85, 0);
-			servo[goalGripper] = 15;
+			servo[goalGripper] = 5;
 
-			autoDrive(2, 85, 0, 0);
+			autoDrive(1.5, 0, -25, 3);
 
-			autoDrive(7, 0, 85, 0);
+			servo[goalGripper] = 100;
+			autoDrive(0.1, 0, -20, 2);
 
-			autoDrive(1, 0, 0, 85);
+			autoDrive(1.5, 50, 0, 0);
 
-			autoDrive(0.5, 0, -85, 0);
+			autoDrive(3.75, 0, 50, -9);
+
+			autoDrive(2, 0, 0, 50);
+
+			//autoDrive(2, 85, 0, 0);
+
+			//autoDrive(7, 0, 85, 0);
+
+			//autoDrive(1, 0, 0, 85);
+
+			//autoDrive(0.5, 0, -85, 0);
 
 		}
 	}
 
 	if(!ramp)
 	{
-		if(rollingGoal)
-		{
-			autoDrive(0.5, -85, 0, 0);
-			autoDrive(8, 0, -85, 0);
-			servo[goalGripper] = 15;
-			autoDrive(8, 0, 85, 0);
-			autoDrive(1, 0, 0, 85);
-			autoDrive(0.5, 0, -85, 0);
-		}
+		//if(rollingGoal)
+		//{
+		//	autoDrive(0.5, -85, 0, 0);
+		//	autoDrive(8, 0, -85, 0);
+		//	servo[goalGripper] = 15;
+		//	autoDrive(8, 0, 85, 0);
+		//	autoDrive(1, 0, 0, 85);
+		//	autoDrive(0.5, 0, -85, 0);
+		//}
 		if(kickstand)
 		{
 			autoDrive(2, 0, -50, 9);
-			autoDrive(1, 0, -10, -100);
+			autoDrive(0.75, 0, -75, -100);
 		}
 	}
 
