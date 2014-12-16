@@ -144,11 +144,11 @@ task main()
 		}
 		else //slow drive, no diagonal zones, first controller joysticks
 		{
-			motor[motor1] = scale(Y1+X1, 7, 5, 20);
-			motor[motor4] = scale(Y1-X1, 7, 5, 20);
+			motor[motor1] = scale(Y1+X1, 7, 5, 35);
+			motor[motor4] = scale(Y1-X1, 7, 5, 35);
 
-			motor[motor2] = scale(Y2-X2, 7, 5, 20);
-			motor[motor3] = scale(Y2+X2, 7, 5, 20);
+			motor[motor2] = scale(Y2-X2, 7, 5, 35);
+			motor[motor3] = scale(Y2+X2, 7, 5, 35);
 		}
 
 		//intake control, second controller left y-axis
