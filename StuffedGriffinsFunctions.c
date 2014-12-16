@@ -67,8 +67,9 @@ int scale(int joyValue, short minMotorPower, short threshold, short maxMotorPowe
 //X = X speed
 //Y = Y speed
 //R = Rotation speed
-void autoDrive (int time_seconds, int X, int Y, int R, tMotor frontLeft, tMotor frontRight, tMotor backRight, tMotor backLeft)
+void autoDrive (float time_seconds, int X, int Y, int R, tMotor frontLeft = motor1, tMotor frontRight = motor2, tMotor backRight = motor3, tMotor backLeft = motor4)
 {
+	X = -X;
 	//Drive
 	motor[frontRight] = -Y + R - X;
 	motor[backRight] =  -Y + R + X;
