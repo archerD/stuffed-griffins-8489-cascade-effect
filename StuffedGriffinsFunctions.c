@@ -87,3 +87,33 @@ void autoDrive (float time_seconds, int X, int Y, int R, tMotor frontLeft = moto
 
 	return;
 }
+
+//this program only moves backwards and forwards.
+//it transitions between the two speeds entered.
+void transition(int initVal, int finalVal, byte changeRate = 10)
+{
+	initVal = -initVal;
+	finalVal = -finalVal;
+	if(initVal < finalVal)
+	{
+		for(int i = initVal; i <= finalVal; i++)
+		{
+			motor[motor1] = i;
+			motor[motor2] = i;
+			motor[motor3] = i;
+			motor[motor4] = i;
+			wait1Msec(changeRate);
+		}
+	}
+	else
+	{
+		for(int i = initVal; i >= finalVal; i--)
+		{
+			motor[motor1] = i;
+			motor[motor2] = i;
+			motor[motor3] = i;
+			motor[motor4] = i;
+			wait1Msec(changeRate);
+		}
+	}
+}
