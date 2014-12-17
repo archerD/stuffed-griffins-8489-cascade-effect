@@ -105,41 +105,44 @@ task main()
 		}
 	}
 
-	eraseDisplay();
 
-	while(true)
-	{
-		eraseDisplay();
-		nxtDisplayCenteredTextLine(1, "Should the robot");
-		nxtDisplayCenteredTextLine(2, "score in the");
-		nxtDisplayCenteredTextLine(3, "center goal");
-		nxtDisplayCenteredTextLine(4, "right for yes");
-		nxtDisplayCenteredTextLine(5, "left for no");
+	//eraseDisplay();
 
-		while(nNxtButtonPressed == -1)
-		{
-		}
-		if(nNxtButtonPressed == 1)
-		{
-			eraseDisplay();
-			write(1);
-			nxtDisplayCenteredTextLine(4, "robot will score");
-			nxtDisplayCenteredTextLine(5, "in center goal");
-			wait1Msec(2000);
-			break;
-		}
-		else if(nNxtButtonPressed == 2)
-		{
-			eraseDisplay();
-			write(2);
-			nxtDisplayCenteredTextLine(3, "robot will not");
-			nxtDisplayCenteredTextLine(4, "score in");
-			nxtDisplayCenteredTextLine(5, "center goal");
+	//while(true)
+	//{
+	//	eraseDisplay();
+	//	nxtDisplayCenteredTextLine(1, "Should the robot");
+	//	nxtDisplayCenteredTextLine(2, "score in the");
+	//	nxtDisplayCenteredTextLine(3, "center goal");
+	//	nxtDisplayCenteredTextLine(4, "right for yes");
+	//	nxtDisplayCenteredTextLine(5, "left for no");
 
-			wait1Msec(2000);
-			break;
-		}
-	}
+	//	while(nNxtButtonPressed == -1)
+	//	{
+	//	}
+	//	if(nNxtButtonPressed == 1)
+	//	{
+	//		eraseDisplay();
+	//		write(1);
+	//		nxtDisplayCenteredTextLine(4, "robot will score");
+	//		nxtDisplayCenteredTextLine(5, "in center goal");
+	//		wait1Msec(2000);
+	//		break;
+	//	}
+	//	else if(nNxtButtonPressed == 2)
+	//	{
+	//		eraseDisplay();
+	//		write(2);
+	//		nxtDisplayCenteredTextLine(3, "robot will not");
+	//		nxtDisplayCenteredTextLine(4, "score in");
+	//		nxtDisplayCenteredTextLine(5, "center goal");
+
+	//		wait1Msec(2000);
+	//		break;
+	//	}
+	//}
+
+	write(2);
 
 	eraseDisplay();
 
@@ -176,6 +179,7 @@ task main()
 			break;
 		}
 	}
+
 
 	Close(writeTo, result);
 	errorCheck(result);
