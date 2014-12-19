@@ -22,10 +22,13 @@ int scale(int joyValue)
 	}
 	else //scale input value
 	{
-		long step1 = joyValue * joyValue;
+		long step1prepA = 10 * joyValue;
+		long step1prepB = step1prepA / abs(joyValue);
+		long step1prepC = joyValue - step1prepB;
+		long step1 = step1prepC * step1prepC;
 		long step2 = step1 * joyValue;
-		long step3 = step2 * (85);
-		float step4 = step3 / 14884;
+		long step3 = step2 * (90);
+		float step4 = step3 / 13689;
 		long step5 = step4 / abs(joyValue);
 		int step6 = 10 * joyValue;
 		int step7 = step6 / abs(joyValue);
@@ -35,7 +38,7 @@ int scale(int joyValue)
 }
 
 //this function is an expansion of the above function.  it offers more control over the scaling.
-//the parameter are: joyValue, the input from the joystick, minMotorPower, the lowest possible power for the direction,
+//the parameter are: joyValue, the input to be scaled, minMotorPower, the lowest possible power for the direction,
 //threshold, for the size of the deadzone, and maxMotorPower, the maximum power possible for the diriection.
 int scale(int joyValue, short minMotorPower, short threshold, short maxMotorPower)
 {
@@ -90,12 +93,15 @@ void autoDrive (float time_seconds, int X, int Y, int R, tMotor frontLeft = moto
 
 //this program only moves backwards and forwards.
 //it transitions between the two speeds entered.
-void transition(int initVal, int finalVal, byte changeRate = 10)
+void transitionYAxis(int initVal, int finalVal, byte changeRate = 10)
 {
 	initVal = -initVal;
 	finalVal = -finalVal;
+
+	//if speeding up while going forwards, or slowing down while in reverse
 	if(initVal < finalVal)
 	{
+		//increment motor speed every changRate milliseconds
 		for(int i = initVal; i <= finalVal; i++)
 		{
 			motor[motor1] = i;
@@ -105,8 +111,10 @@ void transition(int initVal, int finalVal, byte changeRate = 10)
 			wait1Msec(changeRate);
 		}
 	}
+	//if slowing down while going forwards, or speeding up while in reverse
 	else
 	{
+		//decrement motor speed every changeRate milliseconds
 		for(int i = initVal; i >= finalVal; i--)
 		{
 			motor[motor1] = i;

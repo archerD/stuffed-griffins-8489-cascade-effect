@@ -12,7 +12,7 @@
 #pragma config(Motor,  mtr_S2_C2_1,     intake,        tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S2_C2_2,     arm,           tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S2_C1_1,    goalGripper,          tServoStandard)
-#pragma config(Servo,  srvo_S2_C1_2,    servo2,               tServoNone)
+#pragma config(Servo,  srvo_S2_C1_2,    armServo,             tServoStandard)
 #pragma config(Servo,  srvo_S2_C1_3,    servo3,               tServoNone)
 #pragma config(Servo,  srvo_S2_C1_4,    servo4,               tServoNone)
 #pragma config(Servo,  srvo_S2_C1_5,    servo5,               tServoNone)
@@ -55,8 +55,11 @@ void initializeRobot()
 
 //this task is designed for team 8489's arm, it should move it to different positions.
 //the positions are defined by encoder distance form position 1.  There are four positions.
-//as input it needs the position wanted to be reached, and it needs access to variable currentPosition,
-//which must have the number of the current position.
+//There must be global variables currentPosition and newPosition, which stores the current
+//and desired arm positions, respectivly.
+
+//the variables pos1, pos2, pos3, and pos4 are the encoder ticks away from position 1(all the way down),
+//to the desired position
 
 int currentPosition = 1; //arm position
 int newPosition;
@@ -71,7 +74,12 @@ task moveTo()
 	long pos2 = 50;
 	long pos3 = 100;
 	long pos4 = 150;
+	long serPos1 = 0;
+	long serPos2 = 50;
+	long serPos3 = 100;
+	long serPos4 = 150;
 	long encoderValues[4] = {pos1, pos2, pos3, pos4};
+	long servoPositions[4] = {serPos1, serPos2, serPos3, serPos4};
 	nMotorEncoder[arm] = 0;
 
 	//define undefined variables
@@ -79,12 +87,13 @@ task moveTo()
 	position = encoderValues[currentPosition-1];
 	distance = target - position;
 
+	//move servo
+	servo[armServo] = servoPositions[newPosition-1];
 	//start moving arm
 	motor[arm] = 50*distance/abs(distance);
 	//wait to reach target position
 	while(nMotorEncoder[arm] < abs(distance))
 	{
-		EndTimeSlice();
 	}
 	//stop motor and update current position
 	motor[arm] = 0;
@@ -172,14 +181,22 @@ task main()
 
 		//need to test.
 		//arm motor
+		//triggered by buttons 1-4
+		//uses semaphores to make sure that only one task can control the arm at any time
+
+		//check if button has been pressed
 		if(joy1Btn(1) == 1)
 		{
+			//lock semaphore
 			semaphoreLock(armLock);
+			//make sure semaphore lock was successful
 			if(bDoesTaskOwnSemaphore(armLock))
 			{
+				//set new position, and start task
 				newPosition = 1;
 				startTask(moveTo);
 			}
+			//if semaphore lock was succesful, unlock semaphore
 			if(bDoesTaskOwnSemaphore(armLock))
 				semaphoreUnlock(armLock);
 		}

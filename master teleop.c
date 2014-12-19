@@ -12,7 +12,7 @@
 #pragma config(Motor,  mtr_S2_C2_1,     intake,        tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S2_C2_2,     arm,           tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S2_C1_1,    goalGripper,          tServoStandard)
-#pragma config(Servo,  srvo_S2_C1_2,    servo2,               tServoNone)
+#pragma config(Servo,  srvo_S2_C1_2,    armServo,             tServoStandard)
 #pragma config(Servo,  srvo_S2_C1_3,    servo3,               tServoNone)
 #pragma config(Servo,  srvo_S2_C1_4,    servo4,               tServoNone)
 #pragma config(Servo,  srvo_S2_C1_5,    servo5,               tServoNone)
@@ -31,7 +31,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "JoystickDriver.c"  //Include file to "handle" the Bluetooth messages.
-#include "StuffedGriffinsFunctions.c" //include drive files
+#include "StuffedGriffinsFunctions.c" //include file with the Stuffed Griffins' functions
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -91,7 +91,7 @@ task main()
 
 	while (true)
 	{
-		//update joystick
+		//update joystick settings and set joystick variables
 		getJoystickSettings(joystick);
 		Y1 = -joystick.joy1_y1;
 		X1 = joystick.joy1_x1;
@@ -101,7 +101,7 @@ task main()
 		int x = (X1+X2)/2;
 		int y = (Y1+Y2)/2;
 
-		//create toggle for slow drive.  use button 1 to toggle.
+		//create toggle for slow drive.  use button 5 to toggle.
 		if(joy1Btn(5) == 1 && press)
 		{
 			driveToggle=!driveToggle;
@@ -154,7 +154,7 @@ task main()
 		//intake control, second controller left y-axis
 		motor[intake] = scale(joystick.joy2_y1, 5, 5, 100);
 
-		//goal gripper control, second controller left bumper moves up, second controller left trigger moves down
+		//goal gripper control, second controller left bumper releases the goal, second controller left trigger engages the goal
 		if(joy2Btn(5) == 1)
 		{
 			servo[goalGripper] = up;
