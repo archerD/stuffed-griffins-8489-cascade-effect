@@ -137,19 +137,27 @@ task main()
 	{
 		transition(0, -25);
 		autoDrive(1.9, 0, -50, 9);
+		wait1Msec(500);
 		if(rollingGoal)
 		{
 			servo[goalGripper] = 5;
 
 			autoDrive(1.15, 0, -25, 5);
-			wait1Msec(100);
-			transition(-25, -15, 20);
+
+			wait1Msec(500);
+
+			transition(-25, -12, 30);
 
 			servo[goalGripper] = 100;
 
-			transition(-15, 0, 20);
+			transition(-12, 0, 30);
 
-			autoDrive(2, -50, 0, -15);
+			wait1Msec(500);
+
+			//code to put a ball in
+			//the tube will go here
+
+			autoDrive(2.1, -50, 0, -17);
 
 			//autoDrive(3.75, 0, 50, -9);
 

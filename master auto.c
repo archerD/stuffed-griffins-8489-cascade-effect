@@ -131,27 +131,41 @@ task main()
 {
 	initializeRobot();
 
-	waitForStart(); // Wait for the beginning of autonomous phase.
+	waitForStart();
 
 	servo[goalGripper] = 50;
 
 	if(ramp)
 	{
-		autoDrive(2, 0, -50, 9);
+		transition(0, -50);
+		autoDrive(1.85, 0, -50, 12);
+		wait1Msec(500);
 		if(rollingGoal)
 		{
 			servo[goalGripper] = 5;
 
-			autoDrive(1.5, 0, -25, 3);
+			autoDrive(1.15, 0, -25, 8);
+
+			wait1Msec(500);
+
+			transition(-25, -12, 30);
 
 			servo[goalGripper] = 100;
-			autoDrive(0.1, 0, -20, 2);
 
-			autoDrive(1.5, 50, 0, 0);
+			transition(-12, 0, 30);
 
-			autoDrive(3.75, 0, 50, -9);
+			wait1Msec(500);
 
-			autoDrive(2, 0, 0, 50);
+			//code to put a ball in
+			//the tube will go here
+
+			autoDrive(2.5, -50, 0, -20);
+
+			autoDrive(4.6, 0, 25, -5);
+
+			//autoDrive(3.75, 0, 50, -9);
+
+			//autoDrive(2, 0, 0, 50);
 
 			//autoDrive(2, 85, 0, 0);
 
