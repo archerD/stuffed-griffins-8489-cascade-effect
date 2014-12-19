@@ -144,7 +144,7 @@ task main()
 		{
 			servo[goalGripper] = 5;
 
-			autoDrive(1.15, 0, -25, 8);
+			autoDrive(1.15, 0, -25, 10);
 
 			wait1Msec(500);
 
@@ -161,19 +161,11 @@ task main()
 
 			autoDrive(2.5, -50, 0, -20);
 
-			autoDrive(4.6, 0, 25, -5);
+			autoDrive(4.1, 0, 25, -5);
 
-			//autoDrive(3.75, 0, 50, -9);
+			autoDrive(1.1, 0, 0, 50);
 
-			//autoDrive(2, 0, 0, 50);
-
-			//autoDrive(2, 85, 0, 0);
-
-			//autoDrive(7, 0, 85, 0);
-
-			//autoDrive(1, 0, 0, 85);
-
-			//autoDrive(0.5, 0, -85, 0);
+			autoDrive(1, 0, -25, 0);
 
 		}
 	}
