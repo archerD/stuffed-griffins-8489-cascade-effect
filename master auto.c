@@ -146,7 +146,7 @@ task main()
 		if(rollingGoal)
 		{
 			//open servo
-			servo[goalGripper] = 5;
+			servo[goalGripper] = goalGripperRelease;
 
 			//move to goal
 			autoDrive(1.15, 0, -25, 10);
@@ -157,7 +157,7 @@ task main()
 			transition(-25, -12, 30);
 
 			//grab goal...
-			servo[goalGripper] = 100;
+			servo[goalGripper] = goalGripperG;
 
 			//while still moving backwards
 			transition(-12, 0, 30);
