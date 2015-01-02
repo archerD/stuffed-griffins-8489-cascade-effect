@@ -84,8 +84,6 @@ task main()
 
 	//declare variables
 	int X2 = 0, Y1 = 0, X1 = 0, Y2 = 0;
-	int down = 100;
-	int up = 5;
 	bool driveToggle = false;
 	bool press = false;
 
@@ -157,11 +155,11 @@ task main()
 		//goal gripper control, second controller left bumper releases the goal, second controller left trigger engages the goal
 		if(joy2Btn(5) == 1)
 		{
-			servo[goalGripper] = up;
+			servo[goalGripper] = goalGripperRelease;
 		}
 		if(joy2Btn(7) == 1)
 		{
-			servo[goalGripper] = down;
+			servo[goalGripper] = goalGripperGrab;
 		}
 
 	}
