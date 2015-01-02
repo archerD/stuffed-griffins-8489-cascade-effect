@@ -125,3 +125,32 @@ void transitionYAxis(int initVal, int finalVal, byte changeRate = 10)
 		}
 	}
 }
+
+void teleopMecanumDrive()
+{
+  getJoystickSettings(joystick);
+  
+  if( X1*Y1>=0 && X2*Y1>=0 && X1*Y2>=0 && X2*Y1>=0 && abs(x+y-10)/sqrt(2)-1.02*sqrt((x-10)*(x-10)+(y-10)*(y-10))-3>0 )
+  {
+    float average = scale((X1+Y1+X2+Y2)/4);
+    motor[motor1] = average;
+    motor[motor2] = 0;
+    motor[motor3] = average;
+    motor[motor4] = 0;
+  }
+  else if( -X1*Y1>=0 && -X2*Y1>=0 && -X1*Y2>=0 && -X2*Y1>=0 && abs(x+y-10)/sqrt(2)-1.02*sqrt((x-10)*(x-10)+(y-10)*(y-10))-3>0 )
+  {
+    float average = scale((-X1+Y1-X2+Y2)/4);
+    motor[motor1] = 0;
+    motor[motor2] = average;
+    motor[motor3] = 0;
+    motor[motor4] = average;
+  }
+  else
+  {
+    motor[motor1] = scale(Y2+X2);
+    motor[motor4] = scale(Y2-X2);
+    motor[motor2] = scale(Y1-X1);
+    motor[motor3] = scale(Y1+X1);
+  }
+}
