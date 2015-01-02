@@ -10,7 +10,10 @@
 //
 ////////////////////////////////////
 
-
+//These variables store the postitions for the goal gripper servo positions
+//Please use these variables in programs use the goal gripper positions, instead of creating new variables
+int goalGripperRelease = 5;
+int goalGripperGrab = 100;
 
 //this function is designed to take joystick input, create a deadzone, and scale the input for output to motors.
 int scale(int joyValue)
@@ -130,6 +133,7 @@ void teleopMecanumDrive()
 {
   getJoystickSettings(joystick);
   
+  //one set of diagonals
   if( X1*Y1>=0 && X2*Y1>=0 && X1*Y2>=0 && X2*Y1>=0 && abs(x+y-10)/sqrt(2)-1.02*sqrt((x-10)*(x-10)+(y-10)*(y-10))-3>0 )
   {
     float average = scale((X1+Y1+X2+Y2)/4);
@@ -137,7 +141,7 @@ void teleopMecanumDrive()
     motor[motor2] = 0;
     motor[motor3] = average;
     motor[motor4] = 0;
-  }
+  }//second set of diagonals
   else if( -X1*Y1>=0 && -X2*Y1>=0 && -X1*Y2>=0 && -X2*Y1>=0 && abs(x+y-10)/sqrt(2)-1.02*sqrt((x-10)*(x-10)+(y-10)*(y-10))-3>0 )
   {
     float average = scale((-X1+Y1-X2+Y2)/4);
@@ -145,7 +149,7 @@ void teleopMecanumDrive()
     motor[motor2] = average;
     motor[motor3] = 0;
     motor[motor4] = average;
-  }
+  }//normal drive
   else
   {
     motor[motor1] = scale(Y2+X2);
