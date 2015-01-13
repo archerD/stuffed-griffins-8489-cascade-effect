@@ -22,13 +22,16 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//                                    Robot Testing
+//                           Tele-Operation Mode Code Template
 //
-// This file contains the testing files of various nondrive functions.
-// This is the place to test new robot parts functions and such.
+// This file contains a template for simplified creation of an tele-op program for an FTC
+// competition.
+//
+// You need to customize two functions with code unique to your specific robot.
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#include "JoystickDriver.c"  //Include file to "handle" the Bluetooth messages.
 #include "StuffedGriffinsFunctions.c"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,60 +61,45 @@ void initializeRobot()
 //the variables pos1, pos2, pos3, and pos4 are the encoder ticks away from position 1(all the way down),
 //to the desired position
 
-int moveArm(int newPosition, int currentPosition)
+int currentPosition = 1; //arm position
+int newPosition;
+TSemaphore armLock;
+task moveTo()
 {
-  //the motor positions are encoder ticks from the bottom position
-  //the servo positions are the locations of the servo in each different position
-  int motorPos0 = 0, motorPos1 = 50, motorPos2 = 100;
-  int servoPos0 = 10, servoPos1 = 25, servoPos2 = 50;
+	//declare variables
+	long distance;
+	long target;
+	long position;
+	long pos1 = 0;
+	long pos2 = 50;
+	long pos3 = 100;
+	long pos4 = 150;
+	long serPos1 = 0;
+	long serPos2 = 50;
+	long serPos3 = 100;
+	long serPos4 = 150;
+	long encoderValues[4] = {pos1, pos2, pos3, pos4};
+	long servoPositions[4] = {serPos1, serPos2, serPos3, serPos4};
+	nMotorEncoder[arm] = 0;
 
-  //the positions are then put in arrays to make later computation easier
-  int motorPositions[3] = {motorPos0, motorPos1, motorPos2};
-  int servoPositions[3] = {servoPos0, servoPos1, servoPos2};
+	//define undefined variables
+	target = encoderValues[newPosition-1];
+	position = encoderValues[currentPosition-1];
+	distance = target - position;
 
-  //determine how many encoder ticks the motor needs to move
-
-  int motorMovement = motorPositions[newPosition] - motorPositions[currentPosition];
-
-  //start moving the servo to its position
-  servo[arm] = servoPositions[newPosition];
-
-  //reset the encoder
-  nMotorEncoder[arm] = 0;
-
-  //determine which way the motor needs to run
-  if(motorMovement > 0)
-  {
-    motor[arm] = 50;
-
-    //waiting for the target to be reached
-    while(nMotorEncoder[arm] < motorMovement)
-    {
-      //carryout other commands
-      teleopMecanumDrive();
-      //TODO: functions that carry out non drive and non arm commands
-    }
-  }
-  else if(motorMovement < 0)
-  {
-    motor[arm] = -50;
-
-    //waiting for the target to be reached
-    while(nMotorEncoder[arm] <= -motorMovement)
-    {
-      //carryout other commands
-      teleopMecanumDrive();
-      //TODO: functions that carry out non drive and arm commands
-    }
-  }
-
-  //stop the motor
-  motor[arm] = 0;
-
-  //return the new position for the arm
-  return newPosition;
+	//move servo
+	servo[armServo] = servoPositions[newPosition-1];
+	//start moving arm
+	motor[arm] = 50*distance/abs(distance);
+	//wait to reach target position
+	while(nMotorEncoder[arm] < abs(distance))
+	{
+	}
+	//stop motor and update current position
+	motor[arm] = 0;
+	currentPosition = newPosition;
+	return;
 }
-
 
 
 
@@ -152,7 +140,7 @@ task main()
 	int up = 5;
 	bool servoToggle = false;
 	bool press = false;
-	int armPosition = 0;
+	semaphoreInitialize(armLock);
 
 	while (true)
 	{
@@ -172,12 +160,12 @@ task main()
 		}
 
 		//thomas' goal gripper one button toggle
-		if(joy1Btn(4) == 1 && press)
+		if(joy1Btn(2) == 1 && press)
 		{
 			servoToggle=!servoToggle;
 			press=false;
 		}
-		else if(joy1Btn(4) != 1)
+		else if(joy1Btn(2) != 1)
 		{
 			press=true;
 		}
@@ -193,31 +181,58 @@ task main()
 
 		//need to test.
 		//arm motor
-		//triggered by buttons 1-3
+		//triggered by buttons 1-4
+		//uses semaphores to make sure that only one task can control the arm at any time
 
 		//check if button has been pressed
 		if(joy1Btn(1) == 1)
 		{
-			armPosition = moveArm(0, armPosition);
+			//lock semaphore
+			semaphoreLock(armLock);
+			//make sure semaphore lock was successful
+			if(bDoesTaskOwnSemaphore(armLock))
+			{
+				//set new position, and start task
+				newPosition = 1;
+				startTask(moveTo);
+			}
+			//if semaphore lock was succesful, unlock semaphore
+			if(bDoesTaskOwnSemaphore(armLock))
+				semaphoreUnlock(armLock);
 		}
 		else if(joy1Btn(2) == 1)
 		{
-			armPosition = moveArm(1, armPosition);
+			if(bDoesTaskOwnSemaphore(armLock))
+			{
+				semaphoreLock(armLock);
+				newPosition = 2;
+				startTask(moveTo);
+			}
+			if(bDoesTaskOwnSemaphore(armLock))
+				semaphoreUnlock(armLock);
 		}
 		else if(joy1Btn(3) == 1)
 		{
-			armPosition = moveArm(2, armPosition);
+			if(bDoesTaskOwnSemaphore(armLock))
+			{
+				semaphoreLock(armLock);
+				newPosition = 3;
+				startTask(moveTo);
+			}
+			if(bDoesTaskOwnSemaphore(armLock))
+				semaphoreUnlock(armLock);
 		}
-
-		//this button moves the arm motor down in case the arm is thrown off
-    if(joy1Btn(7) == 1)
-    {
-    	motor[arm] = -25;
-    }
-    else
-    {
-    	motor[arm] = 0;
-    }
+		else if(joy1Btn(4) == 1)
+		{
+			if(bDoesTaskOwnSemaphore(armLock))
+			{
+				semaphoreLock(armLock);
+				newPosition = 4;
+				startTask(moveTo);
+			}
+			if(bDoesTaskOwnSemaphore(armLock))
+				semaphoreUnlock(armLock);
+		}
 
 	}
 

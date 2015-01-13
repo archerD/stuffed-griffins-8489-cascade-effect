@@ -1,19 +1,23 @@
 #pragma config(Hubs,  S1, HTMotor,  HTMotor,  none,     none)
-#pragma config(Hubs,  S2, HTServo,  HTMotor,  none,     none)
+#pragma config(Hubs,  S2, HTServo,  none,     none,     none)
+#pragma config(Hubs,  S3, HTMotor,  HTMotor,  none,     none)
 #pragma config(Sensor, S1,     ,               sensorI2CMuxController)
 #pragma config(Sensor, S2,     ,               sensorI2CMuxController)
+#pragma config(Sensor, S3,     ,               sensorI2CMuxController)
 #pragma config(Motor,  motorA,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorB,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorC,           ,             tmotorNXT, openLoop)
-#pragma config(Motor,  mtr_S1_C1_1,     motor4,        tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C1_2,     motor1,        tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C2_1,     motor2,        tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C2_2,     motor3,        tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S2_C2_1,     intake,        tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S2_C2_2,     arm,           tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C1_1,     motor1,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C1_2,     motor2,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C2_1,     motor3,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C2_2,     motor4,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S3_C1_1,     intake,        tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S3_C1_2,     conveyor,      tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S3_C2_1,     armMotor1,     tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S3_C2_2,     armMotor2,     tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S2_C1_1,    goalGripper,          tServoStandard)
-#pragma config(Servo,  srvo_S2_C1_2,    armServo,             tServoStandard)
-#pragma config(Servo,  srvo_S2_C1_3,    servo3,               tServoNone)
+#pragma config(Servo,  srvo_S2_C1_2,    armServo1,            tServoStandard)
+#pragma config(Servo,  srvo_S2_C1_3,    armServo2,            tServoStandard)
 #pragma config(Servo,  srvo_S2_C1_4,    servo4,               tServoNone)
 #pragma config(Servo,  srvo_S2_C1_5,    servo5,               tServoNone)
 #pragma config(Servo,  srvo_S2_C1_6,    servo6,               tServoNone)
@@ -86,8 +90,11 @@ task main()
 	int X2 = 0, Y1 = 0, X1 = 0, Y2 = 0;
 	int down = 180;
 	int up = 130;
+	int arm2Up = 100, arm2Down = 0, arm2Default = 80, arm2 = 0;
+	int armSpeed = 0, conveyerSpeed =0;
+	int leftSpeed = 0, rightSpeed = 0;
 	bool driveToggle = false;
-	bool press = false;
+	bool slowDrive = false;
 
 	while (true)
 	{
@@ -98,61 +105,51 @@ task main()
 		X2 = joystick.joy1_x2;
 		Y2 = -joystick.joy1_y2;
 
-		int x = (X1+X2)/2;
-		int y = (Y1+Y2)/2;
-
 		//create toggle for slow drive.  use button 5 to toggle.
-		if(joy1Btn(5) == 1 && press)
+		if(joy1Btn(9) == 1)
 		{
-			driveToggle=!driveToggle;
-			press=false;
-		}
-		else if(joy1Btn(5) != 1)
+			slowDrive=false;
+
+		};
+		if(joy1Btn(10) == 1)
 		{
-			press=true;
+			slowDrive=true;
+		};
+
+		nxtDisplayCenteredTextLine(4, "%d", driveToggle);
+
+
+		//--------Motors-------
+		if(slowDrive){
+			leftSpeed = joystick.joy1_y1;
+			rightSpeed = joystick.joy1_y2
+
+			;
+			}else{
+			leftSpeed = Y2/2 ;
+			rightSpeed = Y1/2;
 		}
 
-		if(!driveToggle)
-		{
-			//normal drive with diagonal zones, first controller joysticks
-			if( X1*Y1>=0 && X2*Y1>=0 && X1*Y2>=0 && X2*Y1>=0 && abs(x+y-10)/sqrt(2)-1.02*sqrt((x-10)*(x-10)+(y-10)*(y-10))-3>0 )
-			{
+		motor[motor1] = -leftSpeed;
+		motor[motor2] = -leftSpeed;
+		motor[motor3] = -rightSpeed;
+		motor[motor4] = rightSpeed;
 
-				float average = scale((X1+Y1+X2+Y2)/4);
-				motor[motor1] = average;
-				motor[motor2] = 0;
-				motor[motor3] = average;
-				motor[motor4] = 0;
+		//Arm
+		//afarmSpeed = joystick.joy2_y2;
 
-			}
-			else if( -X1*Y1>=0 && -X2*Y1>=0 && -X1*Y2>=0 && -X2*Y1>=0 && abs(x+y-10)/sqrt(2)-1.02*sqrt((x-10)*(x-10)+(y-10)*(y-10))-3>0 )
-			{
-				float average = scale((-X1+Y1-X2+Y2)/4);
-				motor[motor1] = 0;
-				motor[motor2] = average;
-				motor[motor3] = 0;
-				motor[motor4] = average;
-			}
-			else
-			{
-				motor[motor1] = scale(Y2+X2);
-				motor[motor4] = scale(Y2-X2);
+		armSpeed=joystick.joy2_y1;
 
-				motor[motor2] = scale(Y1-X1);
-				motor[motor3] = scale(Y1+X1);
-			}
-		}
-		else //slow drive, no diagonal zones, first controller joysticks
-		{
-			motor[motor1] = scale(Y1+X1, 7, 5, 35);
-			motor[motor4] = scale(Y1-X1, 7, 5, 35);
+		motor[armMotor1]=armSpeed;
+		motor[armMotor2]=armSpeed;
 
-			motor[motor2] = scale(Y2-X2, 7, 5, 35);
-			motor[motor3] = scale(Y2+X2, 7, 5, 35);
-		}
 
 		//intake control, second controller left y-axis
 		motor[intake] = scale(joystick.joy2_y1, 5, 5, 100);
+
+		motor[conveyor] = joystick.joy2_y2;
+
+		//--------Servos-------
 
 		//goal gripper control, second controller left bumper releases the goal, second controller left trigger engages the goal
 		if(joy2Btn(5) == 1)
@@ -163,6 +160,20 @@ task main()
 		{
 			servo[goalGripper] = down;
 		}
+		//Controling the arm servos.
+		if(joy2Btn(1) == 1){
+			arm2+=10;
+			}else if(joy2Btn(2) == 1){
+			arm2-=10;
+		}
+
+		if(joy2Btn(3) == 1){
+			;
+		}
+
+		//Arm servo stuff!!
+		servo[armServo1] = arm2;
+		servo[armServo2] = -arm2+230;
 
 	}
 }

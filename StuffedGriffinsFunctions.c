@@ -1,5 +1,4 @@
 #pragma systemFile
-#include "JoystickDriver.c"  //Include file to "handle" the Bluetooth messages.
 
 ////////////////////////////////////
 //
@@ -11,14 +10,7 @@
 //
 ////////////////////////////////////
 
-//These variables store the postitions for the goal gripper servo positions
-//Please use these variables in programs use the goal gripper positions, instead of creating new variables
-int goalGripperRelease = 5;
-int goalGripperGrab = 100;
 
-//these variables are for teleopMecanumDrive
-bool driveToggle = false;
-bool press = false;
 
 //this function is designed to take joystick input, create a deadzone, and scale the input for output to motors.
 int scale(int joyValue)
@@ -99,7 +91,7 @@ void autoDrive (float time_seconds, int X, int Y, int R, tMotor frontLeft = moto
 	return;
 }
 
-//this function only moves backwards and forwards.
+//this program only moves backwards and forwards.
 //it transitions between the two speeds entered.
 void transitionYAxis(int initVal, int finalVal, byte changeRate = 10)
 {
@@ -132,86 +124,4 @@ void transitionYAxis(int initVal, int finalVal, byte changeRate = 10)
 			wait1Msec(changeRate);
 		}
 	}
-}
-
-void teleopMecanumDrive()
-{
-	//update joystick settings and set joystick variables
-	getJoystickSettings(joystick);
-	int Y1 = -joystick.joy1_y1;
-	int X1 = joystick.joy1_x1;
-	int X2 = joystick.joy1_x2;
-	int Y2 = -joystick.joy1_y2;
-
-	int x = (X1+X2)/2;
-	int y = (Y1+Y2)/2;
-
-	//create toggle for slow drive.  use button 5 to toggle.
-	if(joy1Btn(5) == 1 && press)
-	{
-		driveToggle=!driveToggle;
-		press=false;
-	}
-	else if(joy1Btn(5) != 1)
-	{
-		press=true;
-	}
-
-	if(!driveToggle)
-	{
-		//normal drive with diagonal zones, first controller joysticks
-		if( X1*Y1>=0 && X2*Y1>=0 && X1*Y2>=0 && X2*Y1>=0 && abs(x+y-10)/sqrt(2)-1.02*sqrt((x-10)*(x-10)+(y-10)*(y-10))-3>0 )
-		{
-
-			float average = scale((X1+Y1+X2+Y2)/4);
-			motor[motor1] = average;
-			motor[motor2] = 0;
-			motor[motor3] = average;
-			motor[motor4] = 0;
-
-		}
-		else if( -X1*Y1>=0 && -X2*Y1>=0 && -X1*Y2>=0 && -X2*Y1>=0 && abs(x+y-10)/sqrt(2)-1.02*sqrt((x-10)*(x-10)+(y-10)*(y-10))-3>0 )
-		{
-			float average = scale((-X1+Y1-X2+Y2)/4);
-			motor[motor1] = 0;
-			motor[motor2] = average;
-			motor[motor3] = 0;
-			motor[motor4] = average;
-		}
-		else
-		{
-			motor[motor1] = scale(Y2+X2);
-			motor[motor4] = scale(Y2-X2);
-
-			motor[motor2] = scale(Y1-X1);
-			motor[motor3] = scale(Y1+X1);
-		}
-	}
-	else //slow drive, no diagonal zones, first controller joysticks
-	{
-		motor[motor1] = scale(Y1+X1, 7, 5, 35);
-		motor[motor4] = scale(Y1-X1, 7, 5, 35);
-
-		motor[motor2] = scale(Y2-X2, 7, 5, 35);
-		motor[motor3] = scale(Y2+X2, 7, 5, 35);
-	}
-}
-
-void teleopSimpleRobotFunctions()
-{
-	getJoystickSettings(joystick);
-
-	//intake control, second controller left y-axis
-	motor[intake] = scale(joystick.joy2_y1, 5, 5, 100);
-
-	//goal gripper control, second controller left bumper releases the goal, second controller left trigger engages the goal
-	if(joy2Btn(5) == 1)
-	{
-		servo[goalGripper] = goalGripperRelease;
-	}
-	if(joy2Btn(7) == 1)
-	{
-		servo[goalGripper] = goalGripperGrab;
-	}
-
 }

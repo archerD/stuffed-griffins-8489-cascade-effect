@@ -5,8 +5,8 @@
 #pragma config(Motor,  motorA,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorB,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorC,           ,             tmotorNXT, openLoop)
-#pragma config(Motor,  mtr_S1_C1_1,     motor4,        tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C1_2,     motor1,        tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C1_1,     motor1,        tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C1_2,     motor4,        tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C2_1,     motor2,        tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C2_2,     motor3,        tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S2_C2_1,     intake,        tmotorTetrix, openLoop, reversed)
@@ -83,9 +83,11 @@ task main()
 	waitForStart();   // wait for start of tele-op phase
 
 	//declare variables
+	int soundCounter = 0;
+	int pitch = 0;
 	int X2 = 0, Y1 = 0, X1 = 0, Y2 = 0;
-	int down = 180;
-	int up = 130;
+	int down = 100;
+	int up = 80;
 	bool driveToggle = false;
 	bool press = false;
 
@@ -163,6 +165,40 @@ task main()
 		{
 			servo[goalGripper] = down;
 		}
+
+		//adjusting the pitch
+		if(joy2Btn(4) == 1)
+		{
+			//pitch +=10;
+		}
+		if(joy2Btn(2) == 1)
+		{
+			//pitch -=10;
+		}
+
+		//playImmediateTone(pitch, 1);
+
+
+		//backing up beep!
+
+		if(X1<0){
+			if(soundCounter>300){
+				playImmediateTone(1400, 30);
+				soundCounter=0;
+			}
+
+		}
+		/*
+
+		if(soundCounter>450){
+
+		soundCounter=0;
+
+		}
+
+		pitch+=1;
+		*/
+		soundCounter++;
 
 	}
 }

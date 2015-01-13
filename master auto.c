@@ -29,6 +29,7 @@
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#include "JoystickDriver.c"  //Include file to "handle" the Bluetooth messages.
 #include "StuffedGriffinsFunctions.c" //Stuffed Griffins functions
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145,7 +146,7 @@ task main()
 		if(rollingGoal)
 		{
 			//open servo
-			servo[goalGripper] = goalGripperRelease;
+			servo[goalGripper] = 5;
 
 			//move to goal
 			autoDrive(1.15, 0, -25, 10);
@@ -156,7 +157,7 @@ task main()
 			transitionYAxis(-25, -12, 30);
 
 			//grab goal...
-			servo[goalGripper] = goalGripperGrab;
+			servo[goalGripper] = 100;
 
 			//while still moving backwards
 			transitionYAxis(-12, 0, 30);
