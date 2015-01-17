@@ -1,19 +1,23 @@
 #pragma config(Hubs,  S1, HTMotor,  HTMotor,  none,     none)
-#pragma config(Hubs,  S2, HTServo,  HTMotor,  none,     none)
+#pragma config(Hubs,  S2, HTServo,  none,     none,     none)
+#pragma config(Hubs,  S3, HTMotor,  HTMotor,  none,     none)
 #pragma config(Sensor, S1,     ,               sensorI2CMuxController)
 #pragma config(Sensor, S2,     ,               sensorI2CMuxController)
+#pragma config(Sensor, S3,     ,               sensorI2CMuxController)
 #pragma config(Motor,  motorA,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorB,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorC,           ,             tmotorNXT, openLoop)
-#pragma config(Motor,  mtr_S1_C1_1,     motor1,        tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C1_2,     motor4,        tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C2_1,     motor2,        tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C2_2,     motor3,        tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S2_C2_1,     intake,        tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S2_C2_2,     arm,           tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C1_1,     motor1,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C1_2,     motor2,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C2_1,     motor3,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C2_2,     motor4,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S3_C1_1,     intake,        tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S3_C1_2,     conveyor,      tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S3_C2_1,     armMotor1,     tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S3_C2_2,     armMotor2,     tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S2_C1_1,    goalGripper,          tServoStandard)
-#pragma config(Servo,  srvo_S2_C1_2,    armServo,             tServoStandard)
-#pragma config(Servo,  srvo_S2_C1_3,    servo3,               tServoNone)
+#pragma config(Servo,  srvo_S2_C1_2,    armServo1,            tServoStandard)
+#pragma config(Servo,  srvo_S2_C1_3,    armServo2,            tServoStandard)
 #pragma config(Servo,  srvo_S2_C1_4,    servo4,               tServoNone)
 #pragma config(Servo,  srvo_S2_C1_5,    servo5,               tServoNone)
 #pragma config(Servo,  srvo_S2_C1_6,    servo6,               tServoNone)
@@ -62,51 +66,61 @@ int moveArm(int newPosition, int currentPosition)
 {
   //the motor positions are encoder ticks from the bottom position
   //the servo positions are the locations of the servo in each different position
-  int motorPos0 = 0, motorPos1 = 50, motorPos2 = 100;
+  int motorPos0 = 0, motorPos1 = -50000, motorPos2 = -1000000;
   int servoPos0 = 10, servoPos1 = 25, servoPos2 = 50;
 
   //the positions are then put in arrays to make later computation easier
   int motorPositions[3] = {motorPos0, motorPos1, motorPos2};
-  int servoPositions[3] = {servoPos0, servoPos1, servoPos2};
+  //int servoPositions[3] = {servoPos0, servoPos1, servoPos2};
 
   //determine how many encoder ticks the motor needs to move
 
   int motorMovement = motorPositions[newPosition] - motorPositions[currentPosition];
 
   //start moving the servo to its position
-  servo[arm] = servoPositions[newPosition];
+  //servo[arm] = servoPositions[newPosition];
 
   //reset the encoder
-  nMotorEncoder[arm] = 0;
+  nMotorEncoder[armMotor1] = 0;
+  nMotorEncoder[armMotor2] = 0;
 
   //determine which way the motor needs to run
   if(motorMovement > 0)
   {
-    motor[arm] = 50;
+  	nMotorEncoderTarget[armMotor1] = motorMovement;
+  	nMotorEncoderTarget[armMotor2] = motorMovement;
+
+    motor[armMotor1] = 15;
+    motor[armMotor2] = 15;
 
     //waiting for the target to be reached
-    while(nMotorEncoder[arm] < motorMovement)
+    while(nMotorRunState[armMotor1] != runStateIdle )
     {
       //carryout other commands
-      teleopMecanumDrive();
-      //TODO: functions that carry out non drive and non arm commands
+      //teleopMecanumDrive();
+      //TODO: functions6 that carry out non drive and non arm commands
     }
   }
   else if(motorMovement < 0)
   {
-    motor[arm] = -50;
+    nMotorEncoderTarget[armMotor1] = motorMovement;
+  	nMotorEncoderTarget[armMotor2] = motorMovement;
+
+    motor[armMotor1] = -15;
+    motor[armMotor2] = -15;
 
     //waiting for the target to be reached
-    while(nMotorEncoder[arm] <= -motorMovement)
+    while(nMotorRunState[armMotor1] != runStateIdle)
     {
       //carryout other commands
-      teleopMecanumDrive();
+      //teleopMecanumDrive();
       //TODO: functions that carry out non drive and arm commands
     }
   }
 
   //stop the motor
-  motor[arm] = 0;
+  motor[armMotor1] = 0;
+  motor[armMotor2] = 0;
 
   //return the new position for the arm
   return newPosition;
@@ -161,16 +175,19 @@ task main()
 		//drive intake
 		motor[intake] = scale(joystick.joy1_y1);
 
+		motor[conveyor] = scale(joystick.joy1_y2);
+
 		//goal gripper
 		if(joystick.joy1_TopHat == 0)
 		{
-			servoTarget[goalGripper] = up;
+			servoTarget[goalGripper] = goalGripperRelease;
 		}
 		if(joystick.joy1_TopHat == 4)
 		{
-			servoTarget[goalGripper] = down;
+			servoTarget[goalGripper] = goalGripperGrab;
 		}
 
+		/*
 		//thomas' goal gripper one button toggle
 		if(joy1Btn(4) == 1 && press)
 		{
@@ -190,6 +207,7 @@ task main()
 		{
 			servo[goalGripper] = up;
 		}
+		*/
 
 		//need to test.
 		//arm motor
@@ -212,11 +230,18 @@ task main()
 		//this button moves the arm motor down in case the arm is thrown off
     if(joy1Btn(7) == 1)
     {
-    	motor[arm] = -25;
+    	motor[armMotor1] = 10;
+    	motor[armMotor2] = 10;
+    }
+    else if(joy1Btn(5) == 1)
+    {
+    	motor[armMotor1] = -10;
+    	motor[armMotor2] = -10;
     }
     else
     {
-    	motor[arm] = 0;
+    	motor[armMotor1] = 0;
+    	motor[armMotor2] = 0;
     }
 
 	}
