@@ -28,16 +28,26 @@
 
 task main()
 {
-	motor[armMotor1] = 10;
-	motor[armMotor2] = 10;
-	wait(1);
-	motor[armMotor1] = 0;
-	motor[armMotor2] = 0;
 	while(true)
 	{
-		displayMotorValues(line1, armMotor1);
-
+		getJoystickSettings(joystick);
 		nxtDisplayCenteredTextLine(3, "Encoder values:");
 		nxtDisplayCenteredTextLine(4, "%d and %d ", nMotorEncoder[armMotor1], nMotorEncoder[armMotor2]);
+
+		if(joy1Btn(5) == 1)
+		{
+			motor[armMotor1] = -10;
+			motor[armMotor2] = -10;
+		}
+		else if(joy1Btn(7) == 1)
+		{
+			motor[armMotor1] = 5;
+			motor[armMotor2] = 5;
+		}
+		else
+		{
+			motor[armMotor1] = 0;
+			motor[armMotor2] = 0;
+		}
 	}
 }
