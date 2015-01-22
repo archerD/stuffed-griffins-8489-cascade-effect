@@ -229,18 +229,19 @@ int moveArm(int newPosition, int currentPosition)
   //the motor positions are encoder ticks from the bottom position
   //the servo positions are the locations of the servo in each different position
   int motorPos0 = 0, motorPos1 = -2000, motorPos2 = -4000;
-  int servoPos0 = 10, servoPos1 = 25, servoPos2 = 50;
+  int servoPos0 = 5, servoPos1 = 110, servoPos2 = 220;
 
   //the positions are then put in arrays to make later computation easier
   int motorPositions[3] = {motorPos0, motorPos1, motorPos2};
-  //int servoPositions[3] = {servoPos0, servoPos1, servoPos2};
+  int servoPositions[3] = {servoPos0, servoPos1, servoPos2};
 
   //determine how many encoder ticks the motor needs to move
 
   int motorMovement = motorPositions[newPosition] - motorPositions[currentPosition];
 
   //start moving the servo to its position
-  //servo[arm] = servoPositions[newPosition];
+  servo[armServo1] = servoPositions[newPosition];
+  servo[armServo2] = 225-servoPositions[newPosition];
 
   //reset the encoder
   nMotorEncoder[armMotor1] = 0;
@@ -275,8 +276,8 @@ int moveArm(int newPosition, int currentPosition)
     while(nMotorRunState[armMotor1] != runStateIdle)
     {
       //carryout other commands
-      teleopMecanumDrive();
-      teleopSimpleRobotFunctions();
+      //teleopMecanumDrive();
+      //teleopSimpleRobotFunctions();
     }
   }
 
