@@ -16,6 +16,9 @@
 int goalGripperRelease = 125;
 int goalGripperGrab = 165;
 
+int ballGaurdOFF = 0;
+int ballGaurdON = 170;
+
 //these variables are for teleopMecanumDrive
 bool driveToggle = false;
 bool press = false;
@@ -226,65 +229,75 @@ void teleopSimpleRobotFunctions()
 
 int moveArm(int newPosition, int currentPosition)
 {
-  //the motor positions are encoder ticks from the bottom position
-  //the servo positions are the locations of the servo in each different position
-  int motorPos0 = 0, motorPos1 = -2000, motorPos2 = -4000;
-  int servoPos0 = 5, servoPos1 = 110, servoPos2 = 220;
 
-  //the positions are then put in arrays to make later computation easier
-  int motorPositions[3] = {motorPos0, motorPos1, motorPos2};
-  int servoPositions[3] = {servoPos0, servoPos1, servoPos2};
 
-  //determine how many encoder ticks the motor needs to move
-
-  int motorMovement = motorPositions[newPosition] - motorPositions[currentPosition];
-
-  //start moving the servo to its position
-  servo[armServo1] = servoPositions[newPosition];
-  servo[armServo2] = 225-servoPositions[newPosition];
-
-  //reset the encoder
-  nMotorEncoder[armMotor1] = 0;
-  nMotorEncoder[armMotor2] = 0;
-
-  //determine which way the motor needs to run
-  if(motorMovement > 0)
-  {
-  	nMotorEncoderTarget[armMotor1] = motorMovement;
-  	nMotorEncoderTarget[armMotor2] = motorMovement;
-
-    motor[armMotor1] = 15;
-    motor[armMotor2] = 15;
-
-    //waiting for the target to be reached
-    while(nMotorRunState[armMotor1] != runStateIdle )
-    {
-      //carryout other commands
-      //teleopMecanumDrive();
-      //TODO: functions6 that carry out non drive and non arm commands
-    }
-  }
-  else if(motorMovement < 0)
-  {
-    nMotorEncoderTarget[armMotor1] = motorMovement;
-  	nMotorEncoderTarget[armMotor2] = motorMovement;
-
-    motor[armMotor1] = -30;
-    motor[armMotor2] = -30;
-
-    //waiting for the target to be reached
-    while(nMotorRunState[armMotor1] != runStateIdle)
-    {
-      //carryout other commands
-      //teleopMecanumDrive();
-      //teleopSimpleRobotFunctions();
-    }
+	if(newPosition = 0){
+		servo[ballGard] = ballGaurdOFF;
   }
 
-  //stop the motor
-  motor[armMotor1] = 0;
-  motor[armMotor2] = 0;
+	//the motor positions are encoder ticks from the bottom position
+	//the servo positions are the locations of the servo in each different position
+	int motorPos0 = 0, motorPos1 = -2000, motorPos2 = -4000;
+	int servoPos0 = 5, servoPos1 = 110, servoPos2 = 220;
 
-  //return the new position for the arm
-  return newPosition;
+	//the positions are then put in arrays to make later computation easier
+	int motorPositions[3] = {motorPos0, motorPos1, motorPos2};
+	int servoPositions[3] = {servoPos0, servoPos1, servoPos2};
+
+	//determine how many encoder ticks the motor needs to move
+
+	int motorMovement = motorPositions[newPosition] - motorPositions[currentPosition];
+
+	//start moving the servo to its position
+	servo[armServo1] = servoPositions[newPosition];
+	servo[armServo2] = 225-servoPositions[newPosition];
+
+	//reset the encoder
+	nMotorEncoder[armMotor1] = 0;
+	nMotorEncoder[armMotor2] = 0;
+
+	//determine which way the motor needs to run
+	if(motorMovement > 0)
+	{
+		nMotorEncoderTarget[armMotor1] = motorMovement;
+		nMotorEncoderTarget[armMotor2] = motorMovement;
+
+		motor[armMotor1] = 15;
+		motor[armMotor2] = 15;
+
+		//waiting for the target to be reached
+		while(nMotorRunState[armMotor1] != runStateIdle )
+		{
+			//carryout other commands
+			//teleopMecanumDrive();
+			//TODO: functions6 that carry out non drive and non arm commands
+		}
+	}
+	else if(motorMovement < 0)
+	{
+		nMotorEncoderTarget[armMotor1] = motorMovement;
+		nMotorEncoderTarget[armMotor2] = motorMovement;
+
+		motor[armMotor1] = -30;
+		motor[armMotor2] = -30;
+
+		//waiting for the target to be reached
+		while(nMotorRunState[armMotor1] != runStateIdle)
+		{
+			//carryout other commands
+			//teleopMecanumDrive();
+			//teleopSimpleRobotFunctions();
+		}
+	}
+
+	//stop the motor
+	motor[armMotor1] = 0;
+	motor[armMotor2] = 0;
+
+	if(newPosition != 0){
+		servo[ballGard] = ballGaurdON;
+  }
+
+	//return the new position for the arm
+	return newPosition;
 }
