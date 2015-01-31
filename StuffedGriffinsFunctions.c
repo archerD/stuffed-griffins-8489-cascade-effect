@@ -16,7 +16,7 @@
 int goalGripperRelease = 125;
 int goalGripperGrab = 165;
 
-int ballGuardOFF = 0;
+int ballGuardOFF = 135;
 int ballGuardON = 170;
 
 //these variables are for teleopMecanumDrive
@@ -85,11 +85,11 @@ void autoDrive (float time_seconds, int X, int Y, int R)
 {
 	X = -X;
 
-//Drive
-	motor[motor1] = Y + R + X;
+	//Drive
+	motor[motor1] = -(Y + R + X);
 	motor[motor2] = Y - R - X;
 	motor[motor3] =  Y - R + X;
-	motor[motor4] =  Y + R - X;
+	motor[motor4] =  -(Y + R - X);
 
 	//wait for _ seconds
 	wait1Msec(1000*time_seconds);
@@ -107,8 +107,8 @@ void autoDrive (float time_seconds, int X, int Y, int R)
 //it transitions between the two speeds entered.
 void transitionYAxis(int initVal, int finalVal, byte changeRate = 10)
 {
-	initVal = -initVal;
-	finalVal = -finalVal;
+	initVal = initVal;
+	finalVal = finalVal;
 
 	//if speeding up while going forwards, or slowing down while in reverse
 	if(initVal < finalVal)
@@ -116,10 +116,10 @@ void transitionYAxis(int initVal, int finalVal, byte changeRate = 10)
 		//increment motor speed every changRate milliseconds
 		for(int i = initVal; i <= finalVal; i++)
 		{
-			motor[motor1] = i;
+			motor[motor1] = -i;
 			motor[motor2] = i;
 			motor[motor3] = i;
-			motor[motor4] = i;
+			motor[motor4] = -i;
 			wait1Msec(changeRate);
 		}
 	}
@@ -136,6 +136,19 @@ void transitionYAxis(int initVal, int finalVal, byte changeRate = 10)
 			wait1Msec(changeRate);
 		}
 	}
+}
+
+void grabGoal()
+{
+	//back into goal slowly
+	transitionYAxis(-25, -12, 20);
+
+	//grab goal...
+	servo[goalGripper] = goalGripperGrab;
+
+	//while still moving backwards
+	transitionYAxis(-12, 0, 20);
+
 }
 
 void teleopMecanumDrive()
@@ -198,11 +211,22 @@ void teleopMecanumDrive()
 	}
 	else //slow drive, no diagonal zones, first controller joysticks
 	{
-		motor[motor1] = scale(Y1+X1, 7, 5, 35);
-		motor[motor4] = scale(Y1-X1, 7, 5, 35);
+		if(joy1Btn(7) == 1)
+		{
+			motor[motor1] = scale(Y1+X1, 7, 5, 15);
+			motor[motor4] = scale(Y1-X1, 7, 5, 15);
 
-		motor[motor2] = scale(Y2-X2, 7, 5, 35);
-		motor[motor3] = scale(Y2+X2, 7, 5, 35);
+			motor[motor2] = scale(Y2-X2, 7, 5, 15);
+			motor[motor3] = scale(Y2+X2, 7, 5, 15);
+		}
+		else
+		{
+			motor[motor1] = scale(Y1+X1, 7, 5, 25);
+			motor[motor4] = scale(Y1-X1, 7, 5, 25);
+
+			motor[motor2] = scale(Y2-X2, 7, 5, 25);
+			motor[motor3] = scale(Y2+X2, 7, 5, 25);
+		}
 	}
 }
 
@@ -213,9 +237,30 @@ void teleopSimpleRobotFunctions()
 	//intake control, second controller left y-axis
 	motor[intake] = scale(joystick.joy2_y1, 5, 5, 100);
 
+	if(joy2Btn(5) == 1)
+	{
+		servo[goalGripper] = goalGripperRelease;
+	}
+	if(joy2Btn(7) == 1)
+	{
+		servo[goalGripper] = goalGripperGrab;
+	}
 
+	if(joy2Btn(1) == 1)
+	{
+		grabGoal();
+	}
 
 	motor[conveyor] = scale(joystick.joy2_y2, 5, 5, 50);
+
+	if(joystick.joy2_TopHat == 0)
+	{
+		servo[ballGuard] = ballGuardON;
+	}
+	if(joystick.joy2_TopHat == 4)
+	{
+		servo[ballGuard] = ballGuardOFF;
+	}
 }
 
 //this task is designed for team 8489's arm, it should move it to different positions.
@@ -232,7 +277,7 @@ int moveArm(int newPosition, int currentPosition)
 
 	if(newPosition == 0){
 		servo[ballGuard] = ballGuardOFF;
-  }
+	}
 
 	//the motor positions are encoder ticks from the bottom position
 	//the servo positions are the locations of the servo in each different position
@@ -295,7 +340,7 @@ int moveArm(int newPosition, int currentPosition)
 
 	if(newPosition != 0){
 		servo[ballGuard] = ballGuardON;
-  }
+	}
 
 	//return the new position for the arm
 	return newPosition;

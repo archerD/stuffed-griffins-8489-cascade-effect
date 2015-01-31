@@ -159,14 +159,7 @@ task main()
 
 			wait1Msec(500);
 
-			//back into goal slowly
-			transitionYAxis(-25, -12, 30);
-
-			//grab goal...
-			servo[goalGripper] = goalGripperGrab;
-
-			//while still moving backwards
-			transitionYAxis(-12, 0, 30);
+			grabGoal();
 
 			wait1Msec(500);
 
@@ -174,7 +167,7 @@ task main()
 			//the tube will go here
 
 			//move sideways to go beside ramp
-			autoDrive(2.5, -50, 0, -20);
+			autoDrive(2.5, 50, 0, -20);
 
 			//move to back wall
 			autoDrive(4.1, 0, 25, -5);

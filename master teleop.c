@@ -49,6 +49,9 @@
 
 void initializeRobot()
 {
+	servo[armServo1] = 225;
+	servo[armServo2] = 0;
+	servo[ballGuard] = ballGuardOFF;
 }
 
 
@@ -94,28 +97,35 @@ task main()
 		teleopMecanumDrive();
 
 		teleopSimpleRobotFunctions();
-		//goal gripper control, second controller left bumper releases the goal, second controller left trigger engages the goal
-	if(joy2Btn(5) == 1)
-	{
-		servo[goalGripper] = goalGripperRelease;
-	}
-	if(joy2Btn(7) == 1)
-	{
-		servo[goalGripper] = goalGripperGrab;
-	}
 
 		//check if button has been pressed
-		if(joy1Btn(2) == 1)
+		if(joy2Btn(2) == 1)
 		{
 			armPosition = moveArm(0, armPosition);
 		}
-		else if(joy1Btn(3) == 1)
+		else if(joy2Btn(3) == 1)
 		{
 			armPosition = moveArm(1, armPosition);
 		}
-		else if(joy1Btn(4) == 1)
+		else if(joy2Btn(4) == 1)
 		{
 			armPosition = moveArm(2, armPosition);
+		}
+
+		if(joy2Btn(6) == 1)
+		{
+			motor[armMotor1] = 15;
+			motor[armMotor2] = 15;
+		}
+		else if(joy2Btn(8) == 1)
+		{
+			motor[armMotor1] = -15;
+			motor[armMotor2] = -15;
+		}
+		else
+		{
+			motor[armMotor1] = 0;
+			motor[armMotor2] = 0;
 		}
 
 	}
