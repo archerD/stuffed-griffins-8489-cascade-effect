@@ -16,8 +16,8 @@
 int goalGripperRelease = 125;
 int goalGripperGrab = 165;
 
-int ballGaurdOFF = 0;
-int ballGaurdON = 170;
+int ballGuardOFF = 0;
+int ballGuardON = 170;
 
 //these variables are for teleopMecanumDrive
 bool driveToggle = false;
@@ -81,23 +81,24 @@ int scale(int joyValue, short minMotorPower, short threshold, short maxMotorPowe
 //X = X speed
 //Y = Y speed
 //R = Rotation speed
-void autoDrive (float time_seconds, int X, int Y, int R, tMotor frontLeft = motor1, tMotor frontRight = motor2, tMotor backRight = motor3, tMotor backLeft = motor4)
+void autoDrive (float time_seconds, int X, int Y, int R)
 {
 	X = -X;
-	//Drive
-	motor[frontRight] = -Y + R - X;
-	motor[backRight] =  -Y + R + X;
-	motor[frontLeft] = -Y - R + X;
-	motor[backLeft] =  -Y - R - X;
+
+//Drive
+	motor[motor1] = Y + R + X;
+	motor[motor2] = Y - R - X;
+	motor[motor3] =  Y - R + X;
+	motor[motor4] =  Y + R - X;
 
 	//wait for _ seconds
 	wait1Msec(1000*time_seconds);
 
 	//Reset motors
-	motor[frontLeft] = 0;
-	motor[backLeft] = 0;
-	motor[frontRight] = 0;
-	motor[backRight] = 0;
+	motor[motor1] = 0;
+	motor[motor4] = 0;
+	motor[motor2] = 0;
+	motor[motor3] = 0;
 
 	return;
 }
@@ -142,12 +143,17 @@ void teleopMecanumDrive()
 	//update joystick settings and set joystick variables
 	getJoystickSettings(joystick);
 	int Y1 = -joystick.joy1_y1;
-	int X1 = joystick.joy1_x1;
+	int X1 = -joystick.joy1_x1;
 	int X2 = joystick.joy1_x2;
-	int Y2 = -joystick.joy1_y2;
+	int Y2 = joystick.joy1_y2;
 
 	int x = (X1+X2)/2;
 	int y = (Y1+Y2)/2;
+
+	int frontLeft = scale(X1+Y1);
+	int frontRight = scale(Y2-X2);
+	int backLeft = scale(X1-Y1);
+	int backRight = scale(X2+Y2);
 
 	//create toggle for slow drive.  use button 5 to toggle.
 	if(joy1Btn(5) == 1 && press)
@@ -183,11 +189,11 @@ void teleopMecanumDrive()
 		}
 		else
 		{
-			motor[motor1] = scale(Y2+X2);
-			motor[motor4] = scale(Y2-X2);
+			motor[motor1] = scale(Y1+X1);
+			motor[motor4] = scale(Y1-X1);
 
-			motor[motor2] = scale(Y1-X1);
-			motor[motor3] = scale(Y1+X1);
+			motor[motor2] = scale(Y2-X2);
+			motor[motor3] = scale(Y2+X2);
 		}
 	}
 	else //slow drive, no diagonal zones, first controller joysticks
@@ -207,16 +213,9 @@ void teleopSimpleRobotFunctions()
 	//intake control, second controller left y-axis
 	motor[intake] = scale(joystick.joy2_y1, 5, 5, 100);
 
-	//goal gripper control, second controller left bumper releases the goal, second controller left trigger engages the goal
-	if(joy2Btn(5) == 1)
-	{
-		servo[goalGripper] = goalGripperRelease;
-	}
-	if(joy2Btn(7) == 1)
-	{
-		servo[goalGripper] = goalGripperGrab;
-	}
 
+
+	motor[conveyor] = scale(joystick.joy2_y2, 5, 5, 50);
 }
 
 //this task is designed for team 8489's arm, it should move it to different positions.
@@ -231,13 +230,13 @@ int moveArm(int newPosition, int currentPosition)
 {
 
 
-	if(newPosition = 0){
-		servo[ballGard] = ballGaurdOFF;
+	if(newPosition == 0){
+		servo[ballGuard] = ballGuardOFF;
   }
 
 	//the motor positions are encoder ticks from the bottom position
 	//the servo positions are the locations of the servo in each different position
-	int motorPos0 = 0, motorPos1 = -2000, motorPos2 = -4000;
+	int motorPos0 = 0, motorPos1 = 2255, motorPos2 = 3130;
 	int servoPos0 = 5, servoPos1 = 110, servoPos2 = 220;
 
 	//the positions are then put in arrays to make later computation easier
@@ -269,8 +268,8 @@ int moveArm(int newPosition, int currentPosition)
 		while(nMotorRunState[armMotor1] != runStateIdle )
 		{
 			//carryout other commands
-			//teleopMecanumDrive();
-			//TODO: functions6 that carry out non drive and non arm commands
+			teleopMecanumDrive();
+			teleopSimpleRobotFunctions();
 		}
 	}
 	else if(motorMovement < 0)
@@ -285,8 +284,8 @@ int moveArm(int newPosition, int currentPosition)
 		while(nMotorRunState[armMotor1] != runStateIdle)
 		{
 			//carryout other commands
-			//teleopMecanumDrive();
-			//teleopSimpleRobotFunctions();
+			teleopMecanumDrive();
+			teleopSimpleRobotFunctions();
 		}
 	}
 
@@ -295,7 +294,7 @@ int moveArm(int newPosition, int currentPosition)
 	motor[armMotor2] = 0;
 
 	if(newPosition != 0){
-		servo[ballGard] = ballGaurdON;
+		servo[ballGuard] = ballGuardON;
   }
 
 	//return the new position for the arm

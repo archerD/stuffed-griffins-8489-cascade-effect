@@ -36,13 +36,13 @@ task main()
 
 		if(joy1Btn(5) == 1)
 		{
-			motor[armMotor1] = -10;
-			motor[armMotor2] = -10;
+			motor[armMotor1] = -20;
+			motor[armMotor2] = -20;
 		}
 		else if(joy1Btn(7) == 1)
 		{
-			motor[armMotor1] = 5;
-			motor[armMotor2] = 5;
+			motor[armMotor1] = 20;
+			motor[armMotor2] = 20;
 		}
 		else
 		{
