@@ -147,7 +147,6 @@ task main()
 	{
 		transitionYAxis(0, -50);
 		autoDrive(1.85, 0, -50, 12);
-		wait1Msec(500);
 		//if collecting the rolling goal
 		if(rollingGoal)
 		{
@@ -155,7 +154,7 @@ task main()
 			servo[goalGripper] = goalGripperRelease;
 
 			//move to goal
-			autoDrive(1.15, 0, -25, 10);
+			autoDrive(1, 0, -50, 10);
 
 			wait1Msec(500);
 
@@ -167,16 +166,16 @@ task main()
 			//the tube will go here
 
 			//move sideways to go beside ramp
-			autoDrive(2.5, 50, 0, -20);
+			autoDrive(2.5, 75, 0, -35);
 
 			//move to back wall
-			autoDrive(4.1, 0, 25, -5);
+			autoDrive(4, 0, 75, -5);
 
 			//turn so goal is in parking zone
-			autoDrive(1.1, 0, 0, 50);
+			autoDrive(1, 0, 0, 75);
 
 			//back up to make sure goal is in parking zone
-			autoDrive(1, 0, -25, 0);
+			autoDrive(0.5, 0, 100, 0);
 
 		}
 	}

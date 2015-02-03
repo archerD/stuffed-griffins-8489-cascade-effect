@@ -17,7 +17,7 @@ int goalGripperRelease = 125;
 int goalGripperGrab = 165;
 
 int ballGuardOFF = 135;
-int ballGuardON = 170;
+int ballGuardON = 0;
 
 //these variables are for teleopMecanumDrive
 bool driveToggle = false;
