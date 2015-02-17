@@ -88,7 +88,7 @@ task main()
 
 	waitForStart(); // Wait for the beginning of autonomous phase.
 
-	autoDrive(2, 0, -50, 12);
+	autoDrive(2.5, 0, -50, 12);
 
 	while (true)
 	{}

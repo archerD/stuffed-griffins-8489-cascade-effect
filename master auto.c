@@ -165,8 +165,11 @@ task main()
 			//code to put a ball in
 			//the tube will go here
 
-			//move sideways to go beside ramp
-			autoDrive(2.5, 75, 0, -35);
+			////move sideways to go beside ramp
+			//autoDrive(2.5, 75, 0, -35);
+
+			//rotate to drive beside ramp to parking zone
+			autoDrive(0.75, 0, 0, 25);
 
 			//move to back wall
 			autoDrive(4, 0, 75, -5);
