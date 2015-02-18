@@ -181,10 +181,6 @@ void teleopMecanumDrive()
 		Y2 = -joystick.joy1_y1;
 	}
 
-	int x = (X1+X2)/2;
-	int y = (Y1+Y2)/2;
-
-
 	//create toggle for slow drive.  use button 5 to toggle.
 	if(joy1Btn(5) == 1 && press)
 	{
@@ -202,71 +198,90 @@ void teleopMecanumDrive()
 		if( (abs(abs(X1)+abs(Y1)-10)/sqrt(2)-1.02*sqrt((abs(X1)-10)*(abs(X1)-10)+(abs(Y1)-10)*(abs(Y1)-10))-3>0 &&
 			abs(abs(X2)+abs(Y2)-10)/sqrt(2)-1.02*sqrt((abs(X2)-10)*(abs(X2)-10)+(abs(Y2)-10)*(abs(Y2)-10))-3>0) &&
 		((X1*Y1>0 && X2*Y2>0 && X1*X2>0) || (X1*Y1<0 && X2*Y2<0 && X1*X2>0)))
+		{
+			if(X1*Y1>0)
+			{
+				int x = (X1+X2)/2;
+				int y = (Y1+Y2)/2;
 
+				motor[motor1] = x+y;
+				motor[motor2] = 0;
+				motor[motor3] = x+y;
+				motor[motor4] = 0;
+			}
+			else
+			{
+				int x = (X1+X2)/2;
+				int y = (Y1+Y2)/2;
 
+				motor[motor1] = 0;
+				motor[motor2] = y-x;
+				motor[motor3] = 0;
+				motor[motor4] = y-x;
+			}
 
+		}
+		else
+		{
+			motor[motor1] = scale(Y1+X1);
+			motor[motor4] = scale(Y1-X1);
+
+			motor[motor2] = scale(Y2-X2);
+			motor[motor3] = scale(Y2+X2);
+		}
 	}
-	else
+	else //slow drive, no diagonal zones, first controller joysticks
 	{
-		motor[motor1] = scale(Y1+X1);
-		motor[motor4] = scale(Y1-X1);
+		if(joy1Btn(7) == 1)
+		{
+			motor[motor1] = scale(Y1+X1, 7, 5, 15);
+			motor[motor4] = scale(Y1-X1, 7, 5, 15);
 
-		motor[motor2] = scale(Y2-X2);
-		motor[motor3] = scale(Y2+X2);
-	}
-}
-else //slow drive, no diagonal zones, first controller joysticks
-{
-	if(joy1Btn(7) == 1)
-	{
-		motor[motor1] = scale(Y1+X1, 7, 5, 15);
-		motor[motor4] = scale(Y1-X1, 7, 5, 15);
+			motor[motor2] = scale(Y2-X2, 7, 5, 15);
+			motor[motor3] = scale(Y2+X2, 7, 5, 15);
+		}
+		else
+		{
+			motor[motor1] = scale(Y1+X1, 7, 5, 25);
+			motor[motor4] = scale(Y1-X1, 7, 5, 25);
 
-		motor[motor2] = scale(Y2-X2, 7, 5, 15);
-		motor[motor3] = scale(Y2+X2, 7, 5, 15);
+			motor[motor2] = scale(Y2-X2, 7, 5, 25);
+			motor[motor3] = scale(Y2+X2, 7, 5, 25);
+		}
 	}
-	else
-	{
-		motor[motor1] = scale(Y1+X1, 7, 5, 25);
-		motor[motor4] = scale(Y1-X1, 7, 5, 25);
-
-		motor[motor2] = scale(Y2-X2, 7, 5, 25);
-		motor[motor3] = scale(Y2+X2, 7, 5, 25);
-	}
-}
 }
 
 void teleopSimpleRobotFunctions()
 {
-getJoystickSettings(joystick);
+	getJoystickSettings(joystick);
 
-//intake control, second controller left y-axis
-motor[intake] = scale(joystick.joy2_y1, 5, 5, 100);
+	//intake control, second controller left y-axis
+	motor[intake] = scale(joystick.joy2_y1, 5, 5, 100);
 
-if(joy2Btn(5) == 1)
-{
-	servo[goalGripper] = goalGripperRelease;
-}
-if(joy2Btn(7) == 1)
-{
-	servo[goalGripper] = goalGripperGrab;
-}
+	if(joy2Btn(5) == 1)
+	{
+		servo[goalGripper] = goalGripperRelease;
+	}
+	if(joy2Btn(7) == 1)
+	{
+		servo[goalGripper] = goalGripperGrab;
+	}
 
-if(joy1Btn(6) == 1)
-{
-	grabGoal();
-}
+	if(joy1Btn(6) == 1)
+	{
+		grabGoal();
+	}
 
-motor[conveyor] = -scale(joystick.joy2_y2, 5, 5, 50);
+	motor[conveyor] = -scale(joystick.joy2_y2, 5, 5, 50);
 
-if(joystick.joy2_TopHat == 0)
-{
-	servo[ballGuard] = ballGuardON;
-}
-if(joystick.joy2_TopHat == 4)
-{
-	servo[ballGuard] = ballGuardOFF;
-}
+	if(joystick.joy2_TopHat == 0)
+	{
+		servo[ballGuard] = ballGuardON;
+	}
+	if(joystick.joy2_TopHat == 4)
+	{
+		servo[ballGuard] = ballGuardOFF;
+	}
 }
 
 //this function is designed for team 8489's arm, it should move it to different positions.
@@ -281,66 +296,66 @@ int moveArm(int newPosition, int currentPosition)
 {
 
 
-if(newPosition == 0){
-	servo[ballGuard] = ballGuardOFF;
-}
-
-//the motor positions are encoder ticks from the bottom position
-int motorPos0 = 0, motorPos1 = 2255, motorPos2 = 3130;
-
-//the positions are then put in arrays to make later computation easier
-int motorPositions[3] = {motorPos0, motorPos1, motorPos2};
-
-//determine how many encoder ticks the motor needs to move
-
-int motorMovement = motorPositions[newPosition] - motorPositions[currentPosition];
-
-//reset the encoder
-nMotorEncoder[armMotor1] = 0;
-nMotorEncoder[armMotor2] = 0;
-
-//determine which way the motor needs to run
-if(motorMovement > 0)
-{
-	nMotorEncoderTarget[armMotor1] = motorMovement;
-	nMotorEncoderTarget[armMotor2] = motorMovement;
-
-	motor[armMotor1] = 15;
-	motor[armMotor2] = 15;
-
-	//waiting for the target to be reached
-	while(nMotorRunState[armMotor1] != runStateIdle )
-	{
-		//carryout other commands
-		teleopMecanumDrive();
-		teleopSimpleRobotFunctions();
+	if(newPosition == 0){
+		servo[ballGuard] = ballGuardOFF;
 	}
-}
-else if(motorMovement < 0)
-{
-	nMotorEncoderTarget[armMotor1] = motorMovement;
-	nMotorEncoderTarget[armMotor2] = motorMovement;
 
-	motor[armMotor1] = -30;
-	motor[armMotor2] = -30;
+	//the motor positions are encoder ticks from the bottom position
+	int motorPos0 = 0, motorPos1 = 2255, motorPos2 = 3130;
 
-	//waiting for the target to be reached
-	while(nMotorRunState[armMotor1] != runStateIdle)
+	//the positions are then put in arrays to make later computation easier
+	int motorPositions[3] = {motorPos0, motorPos1, motorPos2};
+
+	//determine how many encoder ticks the motor needs to move
+
+	int motorMovement = motorPositions[newPosition] - motorPositions[currentPosition];
+
+	//reset the encoder
+	nMotorEncoder[armMotor1] = 0;
+	nMotorEncoder[armMotor2] = 0;
+
+	//determine which way the motor needs to run
+	if(motorMovement > 0)
 	{
-		//carryout other commands
-		teleopMecanumDrive();
-		teleopSimpleRobotFunctions();
+		nMotorEncoderTarget[armMotor1] = motorMovement;
+		nMotorEncoderTarget[armMotor2] = motorMovement;
+
+		motor[armMotor1] = 15;
+		motor[armMotor2] = 15;
+
+		//waiting for the target to be reached
+		while(nMotorRunState[armMotor1] != runStateIdle )
+		{
+			//carryout other commands
+			teleopMecanumDrive();
+			teleopSimpleRobotFunctions();
+		}
 	}
-}
+	else if(motorMovement < 0)
+	{
+		nMotorEncoderTarget[armMotor1] = motorMovement;
+		nMotorEncoderTarget[armMotor2] = motorMovement;
 
-//stop the motor
-motor[armMotor1] = 0;
-motor[armMotor2] = 0;
+		motor[armMotor1] = -30;
+		motor[armMotor2] = -30;
 
-if(newPosition != 0){
-	servo[ballGuard] = ballGuardON;
-}
+		//waiting for the target to be reached
+		while(nMotorRunState[armMotor1] != runStateIdle)
+		{
+			//carryout other commands
+			teleopMecanumDrive();
+			teleopSimpleRobotFunctions();
+		}
+	}
 
-//return the new position for the arm
-return newPosition;
+	//stop the motor
+	motor[armMotor1] = 0;
+	motor[armMotor2] = 0;
+
+	if(newPosition != 0){
+		servo[ballGuard] = ballGuardON;
+	}
+
+	//return the new position for the arm
+	return newPosition;
 }
