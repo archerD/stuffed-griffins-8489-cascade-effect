@@ -99,8 +99,6 @@ void autoDrive (float time_seconds, int X, int Y, int R)
 	motor[motor4] = 0;
 	motor[motor2] = 0;
 	motor[motor3] = 0;
-
-	return;
 }
 
 //this function only moves backwards and forwards.
@@ -148,7 +146,6 @@ void grabGoal()
 
 	//while still moving backwards
 	transitionYAxis(-12, 0, 20);
-
 }
 
 void teleopMecanumDrive()
@@ -194,9 +191,16 @@ void teleopMecanumDrive()
 
 	if(!driveToggle)
 	{
+		long absX1 = abs(X1);
+		long absY1 = abs(Y1);
+		long absX2 = abs(X2);
+		long absY2 = abs(Y2);
 		//normal drive with diagonal zones, first controller joysticks
-		if( (abs(abs(X1)+abs(Y1)-10)/sqrt(2)-1.02*sqrt((abs(X1)-10)*(abs(X1)-10)+(abs(Y1)-10)*(abs(Y1)-10))-3>0 &&
-			abs(abs(X2)+abs(Y2)-10)/sqrt(2)-1.02*sqrt((abs(X2)-10)*(abs(X2)-10)+(abs(Y2)-10)*(abs(Y2)-10))-3>0) &&
+		if(
+				(
+					abs(absX1+absY1-10)/sqrt(2)-1.02*sqrt((absX1-10) * (absX1-10)+ (absY1-10) *(absY1-10))-3>0)
+					&& (
+			abs(absX2+absY2-10)/sqrt(2)-1.02*sqrt((absX2-10)*(absX2-10)+(absY2-10)*(absY2-10))-3>0) &&
 		((X1*Y1>0 && X2*Y2>0 && X1*X2>0) || (X1*Y1<0 && X2*Y2<0 && X1*X2>0)))
 		{
 			if(X1*Y1>0)
