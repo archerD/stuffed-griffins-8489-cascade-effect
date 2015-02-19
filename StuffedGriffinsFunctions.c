@@ -13,10 +13,10 @@
 
 //These variables store the postitions for the goal gripper servo positions
 //Please use these variables in programs use the goal gripper positions, instead of creating new variables
-int goalGripperRelease = 125;
-int goalGripperGrab = 165;
+int goalGripperRelease = 117;
+int goalGripperGrab = 68;
 
-int ballGuardOFF = 135;
+int ballGuardOFF = 150;
 int ballGuardON = 0;
 
 //these variables are for teleopMecanumDrive
