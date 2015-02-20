@@ -11,7 +11,7 @@
 #pragma config(Motor,  mtr_S1_C1_2,     motor1,        tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C2_1,     motor4,        tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C2_2,     motor3,        tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S3_C1_1,     conveyor,      tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S3_C1_1,     conveyor,      tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S3_C1_2,     intake,        tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S3_C2_1,     armMotor1,     tmotorTetrix, PIDControl, reversed, encoder)
 #pragma config(Motor,  mtr_S3_C2_2,     armMotor2,     tmotorTetrix, PIDControl, encoder)
@@ -145,7 +145,7 @@ task main()
 	//if starting from the ramp
 	if(ramp)
 	{
-		autoDrive(1.85, 0, -50, 0);
+		autoDrive(1.85, 0, -50, -5);
 		//if collecting the rolling goal
 		if(rollingGoal)
 		{
@@ -153,7 +153,7 @@ task main()
 			servo[goalGripper] = goalGripperRelease;
 
 			//move to goal
-			autoDrive(1.5, 0, -50, 0);
+			autoDrive(1.75, 0, -50, -5);
 
 			wait1Msec(500);
 
@@ -161,23 +161,29 @@ task main()
 
 			wait1Msec(500);
 
-			//code to put a ball in
-			//the tube will go here
+			moveArm(2, 0);
+			wait10Msec(100);
+			motor[conveyor] = 10;
+			wait1Msec(2250);
+			motor[conveyor] = -10;
+			wait1Msec(2250);
+			moveArm(0, 2);
+			motor[conveyor] = 0;
 
 			////move sideways to go beside ramp
 			//autoDrive(2.5, 75, 0, -35);
 
 			//rotate to drive beside ramp to parking zone
-			autoDrive(0.75, 0, 0, 25);
+			autoDrive(0.5, 0, 0, 50);
 
 			//move to back wall
-			autoDrive(4, 0, 75, 0);
+			autoDrive(4.25, 0, 75, 0);
 
 			//turn so goal is in parking zone
-			autoDrive(1, 0, 0, 75);
+			autoDrive(1.25, 0, 0, 100);
 
-			//back up to make sure goal is in parking zone
-			autoDrive(0.5, 0, 100, 0);
+			autoDrive(0.5, 0, 50, 0);
+
 
 		}
 	}

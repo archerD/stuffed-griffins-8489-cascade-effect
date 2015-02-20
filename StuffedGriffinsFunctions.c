@@ -13,8 +13,8 @@
 
 //These variables store the postitions for the goal gripper servo positions
 //Please use these variables in programs use the goal gripper positions, instead of creating new variables
-int goalGripperRelease = 117;
-int goalGripperGrab = 68;
+int goalGripperRelease = 140;
+int goalGripperGrab = 86;
 
 int ballGuardOFF = 150;
 int ballGuardON = 0;
