@@ -153,7 +153,7 @@ task main()
 			servo[goalGripper] = goalGripperRelease;
 
 			//move to goal
-			autoDrive(1.75, 0, -50, -5);
+			autoDrive(1.65, 0, -50, -5);
 
 			wait1Msec(500);
 
@@ -162,6 +162,7 @@ task main()
 			wait1Msec(500);
 
 			moveArm(2, 0);
+
 			wait10Msec(100);
 			motor[conveyor] = 10;
 			wait1Msec(2250);
@@ -174,7 +175,7 @@ task main()
 			//autoDrive(2.5, 75, 0, -35);
 
 			//rotate to drive beside ramp to parking zone
-			autoDrive(0.5, 0, 0, 50);
+			autoDrive(0.5, 0, 0, 55);
 
 			//move to back wall
 			autoDrive(4.25, 0, 75, 0);
@@ -182,7 +183,14 @@ task main()
 			//turn so goal is in parking zone
 			autoDrive(1.25, 0, 0, 100);
 
-			autoDrive(0.5, 0, 50, 0);
+			autoDrive(0.7, 0, 50, 0);
+
+			servo[goalGripper] = goalGripperRelease;
+
+			//Block the  arm stuff
+			autoDrive(1, 0, 0, 90);
+
+			autoDrive(2, 0, 100, 0);
 
 
 		}
