@@ -15,7 +15,7 @@ task main()
 	waitForStart();   // wait for start of tele-op phase
 
 	//Create "deadzone" variables. Adjust threshold value to increase/decrease deadzone
-	int X2 = 0, Y1 = 0, X1 = 0, threshold = 5;
+	int X2 = 0, Y1 = 0, X1 = 0, threshold = 10;
 
 	int driveDirection = 0;
 
@@ -46,12 +46,25 @@ task main()
 
 		switch (driveDirection)
 		{
+
+		case 6:
+		int temp1 = Y1;
+		Y1 = X1;
+		X1 = -temp1;
+		break;
+
 		case 4:
 		Y1 = -Y1;
 		X1 = -X1;
-		X2 = -X2;
 		break;
 
+		case 2:
+		int temp2 = Y1;
+		Y1 = -X1;
+		X1 = temp2;
+		break;
+
+		break;
 		default:
 		break;
 		}
