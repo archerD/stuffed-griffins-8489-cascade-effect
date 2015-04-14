@@ -166,15 +166,15 @@ void teleopMecanumDrive()
 	if(driveForward)
 	{
 		Y1 = -joystick.joy1_y1;
-		X1 = -joystick.joy1_x1;
-		X2 = joystick.joy1_x2;
+		X1 = joystick.joy1_x1;
+		X2 = -joystick.joy1_x2;
 		Y2 = joystick.joy1_y2;
 	}
 	else
 	{
 		Y1 = joystick.joy1_y2;
-		X1 = joystick.joy1_x2;
-		X2 = -joystick.joy1_x1;
+		X1 = -joystick.joy1_x2;
+		X2 = joystick.joy1_x1;
 		Y2 = -joystick.joy1_y1;
 	}
 
